@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh">
-		<head>
-				<meta charset="UTF-8"/>
-				<meta name="og:site_name" content="Tsungyu Swift dev"/>
-				<link rel="canonical" href="https://ytyubox.github.io/posts/bulid-static-web-by-publish"/>
-				<meta name="twitter:url" content="https://ytyubox.github.io/posts/bulid-static-web-by-publish"/>
-				<meta name="og:url" content="https://ytyubox.github.io/posts/bulid-static-web-by-publish"/>
-				<title>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev</title>
-				<meta name="twitter:title" content="[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev"/>
-				<meta name="og:title" content="[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev"/>
-				<meta name="description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/>
-				<meta name="twitter:description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/>
-				<meta name="og:description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/>
-				<meta name="twitter:card" content="summary"/>
-				<link rel="stylesheet" href="/styles.css" type="text/css"/>
-				<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-				<link rel="shortcut icon" href="/images/favicon.png" type="image/png"/>
-				<link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Tsungyu Swift dev"/>
-		</head>
-		<body class="item-page">
-				<header>
-						<div class="wrapper">
-								<a class="site-name" href="/">Tsungyu Swift dev</a>
-						</div>
-				</header>
-				<div class="wrapper">
-						<article>
-								<div class="content"><h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-no-highlight">git clone https://github.com/JohnSundell/Publish.git
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="og:site_name" content="Tsungyu Swift dev"/>
+		<link rel="canonical" href="https://ytyubox.github.io/posts/bulid-static-web-by-publish"/>
+		<meta name="twitter:url" content="https://ytyubox.github.io/posts/bulid-static-web-by-publish"/>
+		<meta name="og:url" content="https://ytyubox.github.io/posts/bulid-static-web-by-publish"/>
+		<title>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev</title>
+		<meta name="twitter:title" content="[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev"/>
+		<meta name="og:title" content="[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev"/>
+		<meta name="description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/>
+		<meta name="twitter:description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/>
+		<meta name="og:description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/>
+		<meta name="twitter:card" content="summary"/>
+		<link rel="stylesheet" href="/styles.css" type="text/css"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<link rel="shortcut icon" href="/images/favicon.png" type="image/png"/>
+		<link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Tsungyu Swift dev"/>
+	</head>
+	<body class="item-page">
+		<header>
+			<div class="wrapper">
+				<a class="site-name" href="/">Tsungyu Swift dev</a>
+			</div>
+		</header>
+		<div class="wrapper">
+			<article>
+				<div class="content"><h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-no-highlight">git clone https://github.com/JohnSundell/Publish.git
 cd Publish
 make
 </code></pre><p>透過 <code>MakeFile</code>, 將安裝 <code>publish-cli</code> 至 <code>/usr/local/bin/</code>, 就可以使用 <code>publish</code></p><p>Step 2: 靜態網頁建立</p><pre><code class="language-no-highlight">mkdir __WEBSITE_NAME__ 
@@ -70,28 +70,28 @@ publish new
 	withTheme: .<span class="dotAccess">foundation</span>,
 	deployedUsing: .<span class="call">git</span>(<span class="string">"https://github.com/ytyubox/ytyubox.github.io"</span>)
 )
-</code></pre><ol start="4"><li>使用 terminal 指令 <code>publish deploy</code> 直接</li></ol></div>
-								<span>Tagged with: </span>
-								<ul class="tag-list">
-										<li>
-												<a href="/tags/howto">HowTo</a>
-										</li>
-										<li>
-												<a href="/tags/publish">Publish</a>
-										</li>
-										<li>
-												<a href="/tags/swift">Swift</a>
-										</li>
-								</ul>
-						</article>
-				</div>
-				<footer>
-						<p>Generated using 
-								<a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift
-						</p>
-						<p>
-								<a href="/feed.rss">RSS feed</a>
-						</p>
-				</footer>
-		</body>
+</code></pre><ol start="4"><li>使用 terminal 指令 <code>publish deploy</code> 直接上傳到 GitHub.</li></ol></div>
+				<span>Tagged with: </span>
+				<ul class="tag-list">
+					<li>
+						<a href="/tags/howto">HowTo</a>
+					</li>
+					<li>
+						<a href="/tags/publish">Publish</a>
+					</li>
+					<li>
+						<a href="/tags/swift">Swift</a>
+					</li>
+				</ul>
+			</article>
+		</div>
+		<footer>
+			<p>Generated using 
+				<a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift
+			</p>
+			<p>
+				<a href="/feed.rss">RSS feed</a>
+			</p>
+		</footer>
+	</body>
 </html>
