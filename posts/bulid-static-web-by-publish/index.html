@@ -26,13 +26,13 @@
 				</header>
 				<div class="wrapper">
 						<article>
-								<div class="content"><h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-bash">git clone https://github.com/JohnSundell/Publish.git
+								<div class="content"><h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-no-highlight">git clone https://github.com/JohnSundell/Publish.git
 cd Publish
 make
-</code></pre><p>透過 <code>MakeFile</code>, 將安裝 <code>publish-cli</code> 至 <code>/usr/local/bin/</code>, 就可以使用 <code>publish</code></p><p>Step 2: 靜態網頁建立</p><pre><code class="language-bash">mkdir __WEBSITE_NAME__ 
+</code></pre><p>透過 <code>MakeFile</code>, 將安裝 <code>publish-cli</code> 至 <code>/usr/local/bin/</code>, 就可以使用 <code>publish</code></p><p>Step 2: 靜態網頁建立</p><pre><code class="language-no-highlight">mkdir __WEBSITE_NAME__ 
 cd __WEBSITE_NAME__
 publish new
-</code></pre><p>透過 <code>PublishCLI</code> 建立 <code>Package.swift</code>, 之後可以用 XCode 編輯</p><h2>Publish 整體架構</h2><pre><code>├── Content/
+</code></pre><p>透過 <code>PublishCLI</code> 建立 <code>Package.swift</code>, 之後可以用 XCode 編輯</p><h2>Publish 整體架構</h2><pre><code class="language-no-highlight">├── Content/
 │   ├── index.md
 │   └── posts/
 │       ├── first-post.md
@@ -43,31 +43,29 @@ publish new
     └── __WEBSITE_NAME__/
         └── main.swift
 
-</code></pre><p>Publish 框架下使用 <code>SPM</code> 來處理整個由 <code>Read *.md</code> ~&gt; <code>gen *.html, Theme.css</code> ~&gt; <code>Site metadata</code> 的過程, 程式相依資源是由 <code>Package.swift</code>控制, 分頁的讀取由 <code>main.swift</code>觸發, 文章的來源是相依從 <code>Content/</code> 取得, 主要設計由 main.swift 的 <code>try SomeWebsite().publish(...)</code>, 其中包含基本網站的 metaData, building 的介入 等.</p><pre><code class="language-swift">import Foundation
-import Publish
-import Plot
+</code></pre><p>Publish 框架下使用 <code>SPM</code> 來處理整個由 <code>Read *.md</code> ~&gt; <code>gen *.html, Theme.css</code> ~&gt; <code>Site metadata</code> 的過程, 程式相依資源是由 <code>Package.swift</code>控制, 分頁的讀取由 <code>main.swift</code>觸發, 文章的來源是相依從 <code>Content/</code> 取得, 主要設計由 main.swift 的 <code>try SomeWebsite().publish(...)</code>, 其中包含基本網站的 metaData, building 的介入 等.</p><pre><code><span class="keyword">import</span> Foundation
+<span class="keyword">import</span> Publish
+<span class="keyword">import</span> Plot
 
-// This type acts as the configuration for your website.
-struct Publishdemo: Website {
-    enum SectionID: String, WebsiteSectionID {
-        // Add the sections that you want your website to contain here:
-        case posts
+<span class="comment">// This type acts as the configuration for your website.</span>
+<span class="keyword">struct</span> Publishdemo: <span class="type">Website</span> {
+    <span class="keyword">enum</span> SectionID: <span class="type">String</span>, <span class="type">WebsiteSectionID</span> {
+        <span class="keyword">case</span> posts
     }
 
-    struct ItemMetadata: WebsiteItemMetadata {
-        // Add any site-specific metadata that you want to use here.
+    <span class="keyword">struct</span> ItemMetadata: <span class="type">WebsiteItemMetadata</span> {
+        <span class="comment">// Add any site-specific metadata that you want to use here.</span>
     }
 
-    // Update these properties to configure your website:
-    var url = URL(string: "https://your-website-url.com")!
-    var name = "Publishdemo"
-    var description = "A description of Publishdemo"
-    var language: Language { .english }
-    var imagePath: Path? { nil }
+    <span class="comment">// Update these properties to configure your website:</span>
+    <span class="keyword">var</span> url = <span class="type">URL</span>(string: <span class="string">"https://your-website-url.com"</span>)!
+    <span class="keyword">var</span> name = <span class="string">"Publishdemo"</span>
+    <span class="keyword">var</span> description = <span class="string">"A description of Publishdemo"</span>
+    <span class="keyword">var</span> language: <span class="type">Language</span> { .<span class="dotAccess">english</span> }
+    <span class="keyword">var</span> imagePath: <span class="type">Path</span>? { <span class="keyword">nil</span> }
 }
 
-// This will generate your website using the built-in Foundation theme:
-try Publishdemo().publish(withTheme: .foundation)
+<span class="keyword">try</span> <span class="type">Publishdemo</span>().<span class="call">publish</span>(withTheme: .<span class="dotAccess">foundation</span>)
 </code></pre></div>
 								<span>Tagged with: </span>
 								<ul class="tag-list">
@@ -85,7 +83,7 @@ try Publishdemo().publish(withTheme: .foundation)
 				</div>
 				<footer>
 						<p>Generated using 
-								<a href="https://github.com/johnsundell/publish">Publish</a>
+								<a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift
 						</p>
 						<p>
 								<a href="/feed.rss">RSS feed</a>
