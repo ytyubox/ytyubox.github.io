@@ -29,6 +29,27 @@
 				<div class="content"><h1>iOS 實機測試震動</h1><img src="https://github.com/ytyubox/tryViber-iOS/blob/master/demo-tryViber.jpeg"/><p>每次時間不可改，最小間隔 0.5 秒</p><pre><code><span class="keyword">import</span> AudioToolbox
 
 <span class="type">AudioServicesPlayAlertSound</span>(<span class="type">SystemSoundID</span>(kSystemSoundID_Vibrate))
+</code></pre><p>套用 Swift 5.1 的 <code>Property Wrapper</code></p><pre><code><span class="keyword">import</span>  AudioToolbox
+
+<span class="keyword">@propertyWrapper
+struct</span> SoundId {
+	<span class="keyword">typealias</span> Value = <span class="type">UInt32</span>
+	<span class="keyword">var</span> projectedValue: <span class="type">SystemSoundID</span>
+	<span class="keyword">var</span> wrappedValue: <span class="type">Value</span> {
+		<span class="keyword">didSet</span> {
+			projectedValue = .<span class="keyword">init</span>(<span class="keyword">self</span>.<span class="property">wrappedValue</span>)
+		}
+	}
+
+	<span class="keyword">init</span>(wrappedValue: <span class="type">Value</span>) {
+		projectedValue = <span class="type">SystemSoundID</span>(wrappedValue)
+		<span class="keyword">self</span>.<span class="property">wrappedValue</span> = wrappedValue
+	}
+}
+
+<span class="keyword">class</span> SOMECLASS{
+<span class="keyword">@SoundId let</span> vibration = kSystemSoundID_Vibrate
+}
 </code></pre></div>
 				<span>Tagged with: </span>
 				<ul class="tag-list">
