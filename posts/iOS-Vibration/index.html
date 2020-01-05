@@ -40,15 +40,19 @@ struct</span> SoundId {
 			projectedValue = .<span class="keyword">init</span>(<span class="keyword">self</span>.<span class="property">wrappedValue</span>)
 		}
 	}
-
+	
 	<span class="keyword">init</span>(wrappedValue: <span class="type">Value</span>) {
-		projectedValue = <span class="type">SystemSoundID</span>(wrappedValue)
+		<span class="keyword">self</span>.<span class="property">projectedValue</span> = <span class="type">SystemSoundID</span>(wrappedValue)
 		<span class="keyword">self</span>.<span class="property">wrappedValue</span> = wrappedValue
 	}
 }
 
-<span class="keyword">class</span> SOMECLASS{
-	 <span class="keyword">@SoundId let</span> vibration = kSystemSoundID_Vibrate
+<span class="keyword">class</span> SOMECLASS {
+	<span class="keyword">@SoundId var</span> currentSystemEffect = kSystemSoundID_Vibrate
+	
+	<span class="keyword">func</span> playSound() {
+		<span class="type">AudioServicesPlaySystemSound</span>(<span class="keyword">self</span>.$currentSystemEffect)
+	}
 }
 </code></pre></div>
 				<span>Tagged with: </span>
