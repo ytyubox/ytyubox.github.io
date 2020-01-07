@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="og:site_name" content="Tsungyu Swift dev"/>
+		<link rel="canonical" href="https://ytyubox.github.io/posts/Asyc-GitHub-exp"/>
+		<meta name="twitter:url" content="https://ytyubox.github.io/posts/Asyc-GitHub-exp"/>
+		<meta name="og:url" content="https://ytyubox.github.io/posts/Asyc-GitHub-exp"/>
+		<title>使用 Async 輕量非同步套件鏈式調用非同步行為 | Tsungyu Swift dev</title>
+		<meta name="twitter:title" content="使用 Async 輕量非同步套件鏈式調用非同步行為 | Tsungyu Swift dev"/>
+		<meta name="og:title" content="使用 Async 輕量非同步套件鏈式調用非同步行為 | Tsungyu Swift dev"/>
+		<meta name="description" content="Async explain and try to extend it"/>
+		<meta name="twitter:description" content="Async explain and try to extend it"/>
+		<meta name="og:description" content="Async explain and try to extend it"/>
+		<meta name="twitter:card" content="summary"/>
+		<link rel="stylesheet" href="/styles.css" type="text/css"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<link rel="shortcut icon" href="/images/favicon.png" type="image/png"/>
+		<link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Tsungyu Swift dev"/>
+	</head>
+	<body class="item-page">
+		<header>
+			<div class="wrapper">
+				<a class="site-name" href="/">Tsungyu Swift dev</a>
+			</div>
+		</header>
+		<div class="fb-root">
+			<script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v5.0&appId=1443810799117142&autoLogAppEvents=1"></script>
+		</div>
+		<div class="wrapper">
+			<article>
+				<div class="content"><h1>使用 Async 輕量非同步套件鏈式調用非同步行為</h1><p>Async: <a href="https://github.com/duemunk/Async">github.com/duemunk/Async</a></p><p>2019 年介紹 <code>Combine</code> 時 <a href="https://ithelp.ithome.com.tw/users/20119945/ironman/2272">2019鐵人賽介紹 Combine 系列</a>, 對於連續的非同步事件的調用, 我們會遇到回呼地獄(Callback hell), 也就是多筆具相依的非同步步驟響應辦法.<br><br>## <code>Async</code> 的解法 相較於原本的 DispatchQueue 的版本:</p><pre><code><span class="type">DispatchQueue</span>.<span class="call">global</span>(qos: .<span class="dotAccess">userInitiated</span>).<span class="call">async</span> {
+	<span class="keyword">let</span> value = <span class="number">10</span>
+	<span class="type">DispatchQueue</span>.<span class="call">global</span>(qos: .<span class="dotAccess">background</span>).<span class="call">async</span> {
+		<span class="keyword">let</span> text = <span class="string">"Score:</span> \(value)<span class="string">"</span>
+		<span class="type">DispatchQueue</span>.<span class="property">main</span>.<span class="call">async</span> {
+			label.<span class="property">text</span> = text
+		}
+	}
+}
+</code></pre><pre><code><span class="type">Async</span>
+.<span class="call">userInitiated</span> { <span class="number">10</span> }
+.<span class="call">background</span> { <span class="string">"Score:</span> \($0)<span class="string">"</span>}
+.<span class="call">main</span> { label.<span class="property">text</span> = $0 }
+</code></pre><p><code>Async</code>很像瀑布一樣, 由上至下的思考非同步的執行流程.</p><h2><code>Async</code> 沒有對錯誤拋出處理 <code>throws</code></h2><p>在研究了一段時間發現, <code>Async</code> 很可惜的沒有對 <code>Error handle</code> 做處理, 決定研究了一下, 修改部分的程式碼, <a href="https://github.com/ytyubox/Async">fork repo</a>.</p><pre><code><span class="keyword">private class</span> Reference&lt;T&gt; {
+		<span class="keyword">var</span> value: <span class="type">T</span>?
+<span class="comment">/*新增*/</span>	<span class="keyword">var</span> error:<span class="type">Error</span>? 
+<span class="comment">/*新增*/</span>	<span class="keyword">var</span> queue:<span class="type">GCD</span>?   
+}
+</code></pre><pre><code><span class="keyword">public struct</span> AsyncBlock&lt;In, Out&gt; {
+
+	...
+
+
+	<span class="keyword">private static func</span> async&lt;O&gt;(after seconds: <span class="type">Double</span>? = <span class="keyword">nil</span>,
+								 block: <span class="keyword">@escaping</span> () <span class="keyword">throws</span> -&gt; <span class="type">O</span>,
+								 queue: <span class="type">GCD</span>) -&gt; <span class="type">AsyncBlock</span>&lt;<span class="type">Void</span>, <span class="type">O</span>&gt; {
+		<span class="keyword">let</span> reference = <span class="type">Reference</span>&lt;<span class="type">O</span>&gt;()
+<span class="comment">/*新增*/</span>	reference.<span class="property">queue</span> = queue
+		<span class="keyword">let</span> block = <span class="type">DispatchWorkItem</span>(block: {
+<span class="comment">/*新增*/</span>		<span class="keyword">do</span> {
+<span class="comment">/*新增*/</span>			reference.<span class="property">value</span> = <span class="keyword">try</span> <span class="call">block</span>()
+<span class="comment">/*新增*/</span>		}<span class="keyword">catch</span> {
+<span class="comment">/*新增*/</span>			reference.<span class="property">error</span> = error
+<span class="comment">/*新增*/</span>		}
+		})
+	  ...
+	}
+ 
+    <span class="keyword">private func</span> chain&lt;O&gt;(after seconds: <span class="type">Double</span>? = <span class="keyword">nil</span>,
+						  block chainingBlock: <span class="keyword">@escaping</span> (<span class="type">Out</span>) <span class="keyword">throws</span> -&gt; <span class="type">O</span>,
+						  queue: <span class="type">GCD</span>) -&gt; <span class="type">AsyncBlock</span>&lt;<span class="type">Out</span>, <span class="type">O</span>&gt; {
+        <span class="keyword">let</span> reference = <span class="type">Reference</span>&lt;<span class="type">O</span>&gt;()
+<span class="comment">/*新增*/</span>			reference.<span class="property">queue</span> = queue
+        <span class="keyword">let</span> dispatchWorkItem = <span class="type">DispatchWorkItem</span>(block: {
+<span class="comment">/*新增*/</span>		<span class="keyword">guard let</span> value = <span class="keyword">self</span>.<span class="property">output_</span>.<span class="property">value</span> <span class="keyword">else</span> {
+<span class="comment">/*新增*/</span>			<span class="keyword">return</span> reference.<span class="property">error</span> = <span class="keyword">self</span>.<span class="property">output_</span>.<span class="property">error</span>!
+<span class="comment">/*新增*/</span>		}
+<span class="comment">/*新增*/</span>		<span class="keyword">do</span> {
+<span class="comment">/*新增*/</span>			reference.<span class="property">value</span> = <span class="keyword">try</span> <span class="call">chainingBlock</span>(value)
+<span class="comment">/*新增*/</span>		} <span class="keyword">catch</span> {
+<span class="comment">/*新增*/</span>			reference.<span class="property">error</span> = error
+<span class="comment">/*新增*/</span>		}
+        })
+
+	...
+	}
+
+...
+
+}
+</code></pre><p>如此一來, 就可以對 <code>AsyncBlock</code> 拓展 <code>catch(_:)</code></p><pre><code><span class="comment">/*新增*/</span>
+<span class="keyword">@discardableResult
+public func</span> `catch`(respondBlock: <span class="keyword">@escaping</span> (<span class="type">Error</span>) -&gt; <span class="type">Void</span>) -&gt; <span class="type">AsyncBlock</span>&lt;<span class="type">In</span>,<span class="type">Out</span>&gt; {
+	<span class="keyword">let</span> queue = output_.<span class="property">queue</span>!.queue
+	<span class="keyword">let</span> c = {
+		<span class="keyword">if let</span> error = <span class="keyword">self</span>.<span class="property">output_</span>.<span class="property">error</span> {
+			<span class="call">respondBlock</span>(error)
+		}
+	}
+	<span class="keyword">let</span> item = <span class="type">DispatchWorkItem</span>(block: c)
+	block.<span class="call">notify</span>(queue: queue, execute: item)
+	<span class="keyword">return self</span>
+}
+</code></pre><p>實作單元測試:</p><pre><code><span class="keyword">func</span> testAsyncMainWithCatch() {
+	<span class="keyword">let</span> expectation = <span class="keyword">self</span>.<span class="call">expectation</span>(description: <span class="string">"Expected on main queue"</span>)
+	<span class="keyword">var</span> calledStuffAfterSinceAsync = <span class="keyword">false</span>
+	<span class="type">Async</span>.<span class="call">main</span> {
+		<span class="keyword">try self</span>.<span class="call">alwaysError</span>()
+	}.<span class="keyword">catch</span> { (error) <span class="keyword">in</span>
+		<span class="preprocessing">#if targetEnvironment(simulator)</span>
+		<span class="call">XCTAssert</span>(<span class="type">Thread</span>.<span class="property">isMainThread</span>, <span class="string">"Should be on main thread (simulator)"</span>)
+		<span class="preprocessing">#else</span>
+		<span class="call">XCTAssertEqual</span>(<span class="call">qos_class_self</span>(), <span class="call">qos_class_main</span>())
+		<span class="preprocessing">#endif</span>
+		<span class="call">XCTAssert</span>(calledStuffAfterSinceAsync, <span class="string">"Should be async"</span>)
+		expectation.<span class="call">fulfill</span>()
+	}
+	calledStuffAfterSinceAsync = <span class="keyword">true</span>
+	waitForExpectations(timeout: timeMargin, handler: <span class="keyword">nil</span>)
+}
+</code></pre><p>以上, 於 fork 的 GitHub project 內持續補上 test case! GitHub 連結: https://github.com/ytyubox/Async</p></div>
+				<span>Tagged with: </span>
+				<ul class="tag-list">
+					<li>
+						<a href="/tags/spm">SPM</a>
+					</li>
+					<li>
+						<a href="/tags/exp">exp</a>
+					</li>
+					<li>
+						<a href="/tags/swift">Swift</a>
+					</li>
+				</ul>
+			</article>
+		</div>
+		<div class="fb-comments" data-herf="https://ytyubox.github.io/posts/Asyc-GitHub-exp" data-width data-numposts="10" colorscheme="dark"></div>
+		<footer>
+			<p>Generated using 
+				<a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift
+			</p>
+			<p>
+				<a href="/feed.rss">RSS feed</a>
+			</p>
+		</footer>
+	</body>
+</html>
