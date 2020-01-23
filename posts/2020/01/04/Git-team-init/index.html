@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"/><meta name="og:site_name" content="Tsungyu Swift dev 🦄"/><link rel="canonical" href="https://ytyubox.github.io/posts/2020/01/04/Git-team-init"/><meta name="twitter:url" content="https://ytyubox.github.io/posts/2020/01/04/Git-team-init"/><meta name="og:url" content="https://ytyubox.github.io/posts/2020/01/04/Git-team-init"/><meta name="google-site-verification" content="laa-5denPCh-d7LKKq_HLxpcMTXZa1R2OSU8L19KmM0"/><title>新團隊建立 Git 指南 (一) | Tsungyu Swift dev 🦄</title><meta name="twitter:title" content="新團隊建立 Git 指南 (一) | Tsungyu Swift dev 🦄"/><meta name="og:title" content="新團隊建立 Git 指南 (一) | Tsungyu Swift dev 🦄"/><meta name="description" content="Git 團隊手冊中針對新團隊的章節"/><meta name="twitter:description" content="Git 團隊手冊中針對新團隊的章節"/><meta name="og:description" content="Git 團隊手冊中針對新團隊的章節"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Tsungyu Swift dev 🦄"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">Tsungyu Swift dev 🦄</a><div><script async src="https://www.googletagmanager.com/gtag/js?id=UA-155763530-1"></script><script>				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', 'UA-155763530-1');</script></div><nav><ul><li><a class="selected" href="/posts">posts</a></li><li><a href="/about">About</a></li></ul></nav></div></header><div class="fb-root"><script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v5.0&appId=1443810799117142&autoLogAppEvents=1"></script></div><div class="wrapper"><article><div class="content"><h1>新團隊建立 Git 指南 (一)</h1><img src="https://i.imgur.com/LLQU4xt.jpg"/><p>在 Git 團隊使用手冊中, 介紹了如何在多人團隊中建立 Git 的方式.</p><h2>1. 耐心與同情心</h2><p>有同情心的團隊會為新手留下說明操作程序的文件, 回答新人問題. "Help me, help you.", 就是專案領導人該有的口號!</p><p>目標: 一致性的部分都留下詳細的指引, 樣板及自動化腳本, 將標準之外的情況視為自己應該解決的程序問題.</p><img src="https://i.imgur.com/qvkTcc9.png"/><p>推薦影片教學 https://player.oreilly.com/videos/9781491912003</p><h2>2. 建立 Repository</h2><p>不論選擇 GitHub/GitLab, 第一需要考慮的問題是: 該用哪個賬號建立 Repo? 首先, 在 repo 的 URL 通常會以 <code>https://&lt;代管系統主機&gt;.com/&lt;REPO擁有者&gt;/</code>, 端看這個專案(repo) 是屬於自己或是或是所屬的機構(公司), 選擇專案的擁有者.</p><p>第二, 決定專案各種權限: 對於開源專案, <code>READ</code> 的權限是開發的, 但對於 <code>WRITE</code> 的權限分成組織開發者, 非組織貢獻者. 對於這些分別的最大差別, 最主要的分別是: 可以同意寫入的能力, 例如一位非組織貢獻者想貢獻一部份的 code modification, 若使用的是 <code>GitHub</code> 服務, 則必須 <code>fork</code> 一份在自己賬號的複製專案, 推送改動, 並發起 <code>Pull Request</code>, 由組織開發者同意是否同意寫入.</p><h2>3. 沒有寫入權限的專案成員對專案的貢獻步驟</h2><ol><li>not folk</li></ol><pre><code>git colne <span class="type">REPOURL REPO</span>
+cd <span class="type">REPO</span>
+git remote add personal <span class="type">MYREPOURL</span>
+git branch my-proposal
+git checkout my-proposal
+
+# <span class="keyword">do</span> all the concreate change
+
+git add <span class="type">FILE</span>
+git commit -m 'finish change start porposal'
+git push personal my-proposal
+</code></pre><p>發起 Pull Request</p><ol start="2"><li>folk</li></ol><p>在專案託管系統 folk 一份在自己賬號之下</p><pre><code>git clone <span class="type">MYFORKURL REPO</span>
+cd <span class="type">REPO</span>
+git remote add <span class="type">REPOURL</span> offical
+git branch my-proposal
+git checkout my-proposal
+
+# <span class="keyword">do</span> all the concreate change
+
+git add <span class="type">FILE</span>
+git commit -m 'finish change start porposal'
+git push original my-proposal
+</code></pre><p>一樣發起 Pull Request</p><p>下一篇將介紹維護者要如何處理 Pull Request</p></div><span>Tagged with: </span><ul class="tag-list"><li><a href="/tags/git">Git</a></li><li><a href="/tags/team">team</a></li></ul></article></div><div class="fb-comments" data-herf="https://ytyubox.github.io/posts/2020/01/04/Git-team-init" data-width data-numposts="10" colorscheme="dark"></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift</p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>

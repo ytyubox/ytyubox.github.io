@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"/><meta name="og:site_name" content="Tsungyu Swift dev 🦄"/><link rel="canonical" href="https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish"/><meta name="twitter:url" content="https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish"/><meta name="og:url" content="https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish"/><meta name="google-site-verification" content="laa-5denPCh-d7LKKq_HLxpcMTXZa1R2OSU8L19KmM0"/><title>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev 🦄</title><meta name="twitter:title" content="[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev 🦄"/><meta name="og:title" content="[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog | Tsungyu Swift dev 🦄"/><meta name="description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/><meta name="twitter:description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/><meta name="og:description" content="使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Tsungyu Swift dev 🦄"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">Tsungyu Swift dev 🦄</a><div><script async src="https://www.googletagmanager.com/gtag/js?id=UA-155763530-1"></script><script>				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', 'UA-155763530-1');</script></div><nav><ul><li><a class="selected" href="/posts">posts</a></li><li><a href="/about">About</a></li></ul></nav></div></header><div class="fb-root"><script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v5.0&appId=1443810799117142&autoLogAppEvents=1"></script></div><div class="wrapper"><article><div class="content"><h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-no-highlight">git clone https://github.com/JohnSundell/Publish.git
+cd Publish
+make
+</code></pre><p>透過 <code>MakeFile</code>, 將安裝 <code>publish-cli</code> 至 <code>/usr/local/bin/</code>, 就可以使用 <code>publish</code></p><p>Step 2: 靜態網頁建立</p><pre><code class="language-no-highlight">mkdir __WEBSITE_NAME__ 
+cd __WEBSITE_NAME__
+publish new
+</code></pre><p>透過 <code>PublishCLI</code> 建立 <code>Package.swift</code>, 之後可以用 XCode 編輯</p><h2>Publish 整體架構</h2><pre><code class="language-no-highlight">├── Content/
+│   ├── index.md
+│   └── posts/
+│       ├── first-post.md
+│       └── index.md
+├── Package.swift
+├── Resources/
+└── Sources/
+    └── __WEBSITE_NAME__/
+        └── main.swift
+
+</code></pre><p>Publish 框架下使用 <code>SPM</code> 來處理整個由 <code>Read *.md</code> ~&gt; <code>gen *.html, Theme.css</code> ~&gt; <code>Site metadata</code> 的過程, 程式相依資源是由 <code>Package.swift</code>控制, 分頁的讀取由 <code>main.swift</code>觸發, 文章的來源是相依從 <code>Content/</code> 取得, 主要設計由 main.swift 的 <code>try SomeWebsite().publish(...)</code>, 其中包含基本網站的 metaData, building 的介入 等.</p><pre><code><span class="keyword">import</span> Foundation
+<span class="keyword">import</span> Publish
+<span class="keyword">import</span> Plot
+
+<span class="comment">// This type acts as the configuration for your website.</span>
+<span class="keyword">struct</span> Publishdemo: <span class="type">Website</span> {
+    <span class="keyword">enum</span> SectionID: <span class="type">String</span>, <span class="type">WebsiteSectionID</span> {
+        <span class="keyword">case</span> posts
+    }
+
+    <span class="keyword">struct</span> ItemMetadata: <span class="type">WebsiteItemMetadata</span> {
+        <span class="comment">// Add any site-specific metadata that you want to use here.</span>
+    }
+
+    <span class="comment">// Update these properties to configure your website:</span>
+    <span class="keyword">var</span> url = <span class="type">URL</span>(string: <span class="string">"https://your-website-url.com"</span>)!
+    <span class="keyword">var</span> name = <span class="string">"Publishdemo"</span>
+    <span class="keyword">var</span> description = <span class="string">"A description of Publishdemo"</span>
+    <span class="keyword">var</span> language: <span class="type">Language</span> { .<span class="dotAccess">english</span> }
+    <span class="keyword">var</span> imagePath: <span class="type">Path</span>? { <span class="keyword">nil</span> }
+}
+
+<span class="keyword">try</span> <span class="type">Publishdemo</span>().<span class="call">publish</span>(withTheme: .<span class="dotAccess">foundation</span>)
+</code></pre><h2>使用 GitHub page 作為 發佈空間</h2><p>GitHub 在每個賬號下可以有固定一個免費的靜態網站的空間, 原意是可以作為 open source 的 doc 或是基本的 intro, 而作為個人使用賬號, 可以用來作為個人的 blog. 1. 與GitHub 建立一個 repo, 名稱必須是<code>該賬號.github.io</code> , 這樣才可以被 GitHub 識別. 2. (很重要) 不要對哪個 repo 作任何 push. 3. 與你的 <code>main.swift</code> 內建的<code>.publish(withTheme:)</code>修改為一下</p><pre><code><span class="keyword">try</span> <span class="type">MyWebSite</span>().<span class="call">publish</span>(
+    withTheme: .<span class="dotAccess">foundation</span>,
+    deployedUsing: .<span class="call">git</span>(<span class="string">"https://github.com/ytyubox/ytyubox.github.io"</span>)
+)
+</code></pre><ol start="4"><li>使用 terminal 指令 <code>publish deploy</code> 直接上傳到 GitHub.</li></ol></div><span>Tagged with: </span><ul class="tag-list"><li><a href="/tags/howto">HowTo</a></li><li><a href="/tags/publish">Publish</a></li><li><a href="/tags/swift">Swift</a></li></ul></article></div><div class="fb-comments" data-herf="https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish" data-width data-numposts="10" colorscheme="dark"></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift</p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Tsungyu Swift dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Thu, 23 Jan 2020 12:47:33 +0000</lastBuildDate><pubDate>Thu, 23 Jan 2020 12:47:33 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Publish-apply-GA-SEO</guid><title>Swift Publish 套用 Google Analytics 與 SEO</title><description>為 Publish 套用 Google 分析與搜尋引擎優化</description><link>https://ytyubox.github.io/posts/2020/Publish-apply-GA-SEO</link><pubDate>Thu, 9 Jan 2020 02:29:00 +0000</pubDate><content:encoded><![CDATA[<h1>Swift Publish 套用 Google Analytics 與 SEO</h1>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Asyc-GitHub-exp</guid><title>使用 Async 輕量非同步套件鏈式調用非同步行為</title><description>Async explain and try to extend it</description><link>https://ytyubox.github.io/posts/2020/Asyc-GitHub-exp</link><pubDate>Mon, 6 Jan 2020 22:23:00 +0000</pubDate><content:encoded><![CDATA[<h1>使用 Async 輕量非同步套件鏈式調用非同步行為</h1><p>Async: <a href="https://github.com/duemunk/Async">github.com/duemunk/Async</a></p><p>2019 年介紹 <code>Combine</code> 時 <a href="https://ithelp.ithome.com.tw/users/20119945/ironman/2272">2019鐵人賽介紹 Combine 系列</a>, 對於連續的非同步事件的調用, 我們會遇到回呼地獄(Callback hell), 也就是多筆具相依的非同步步驟響應辦法.<br><br>## <code>Async</code> 的解法 相較於原本的 DispatchQueue 的版本:</p><pre><code><span class="type">DispatchQueue</span>.<span class="call">global</span>(qos: .<span class="dotAccess">userInitiated</span>).<span class="call">async</span> {
+    <span class="keyword">let</span> value = <span class="number">10</span>
+    <span class="type">DispatchQueue</span>.<span class="call">global</span>(qos: .<span class="dotAccess">background</span>).<span class="call">async</span> {
+        <span class="keyword">let</span> text = <span class="string">"Score:</span> \(value)<span class="string">"</span>
+        <span class="type">DispatchQueue</span>.<span class="property">main</span>.<span class="call">async</span> {
+            label.<span class="property">text</span> = text
+        }
+    }
+}
+</code></pre><pre><code><span class="type">Async</span>
+.<span class="call">userInitiated</span> { <span class="number">10</span> }
+.<span class="call">background</span> { <span class="string">"Score:</span> \($0)<span class="string">"</span>}
+.<span class="call">main</span> { label.<span class="property">text</span> = $0 }
+</code></pre><p><code>Async</code>很像瀑布一樣, 由上至下的思考非同步的執行流程.</p><h2><code>Async</code> 沒有對錯誤拋出處理 <code>throws</code></h2><p>在研究了一段時間發現, <code>Async</code> 很可惜的沒有對 <code>Error handle</code> 做處理, 決定研究了一下, 修改部分的程式碼, <a href="https://github.com/ytyubox/Async">fork repo</a>.</p><pre><code><span class="keyword">private class</span> Reference&lt;T&gt; {
+        <span class="keyword">var</span> value: <span class="type">T</span>?
+<span class="comment">/*新增*/</span>    <span class="keyword">var</span> error:<span class="type">Error</span>? 
+<span class="comment">/*新增*/</span>    <span class="keyword">var</span> queue:<span class="type">GCD</span>?   
+}
+</code></pre><pre><code><span class="keyword">public struct</span> AsyncBlock&lt;In, Out&gt; {
+
+    ...
+
+
+    <span class="keyword">private static func</span> async&lt;O&gt;(after seconds: <span class="type">Double</span>? = <span class="keyword">nil</span>,
+                                 block: <span class="keyword">@escaping</span> () <span class="keyword">throws</span> -&gt; <span class="type">O</span>,
+                                 queue: <span class="type">GCD</span>) -&gt; <span class="type">AsyncBlock</span>&lt;<span class="type">Void</span>, <span class="type">O</span>&gt; {
+        <span class="keyword">let</span> reference = <span class="type">Reference</span>&lt;<span class="type">O</span>&gt;()
+<span class="comment">/*新增*/</span>    reference.<span class="property">queue</span> = queue
+        <span class="keyword">let</span> block = <span class="type">DispatchWorkItem</span>(block: {
+<span class="comment">/*新增*/</span>        <span class="keyword">do</span> {
+<span class="comment">/*新增*/</span>            reference.<span class="property">value</span> = <span class="keyword">try</span> <span class="call">block</span>()
+<span class="comment">/*新增*/</span>        }<span class="keyword">catch</span> {
+<span class="comment">/*新增*/</span>            reference.<span class="property">error</span> = error
+<span class="comment">/*新增*/</span>        }
+        })
+      ...
+    }
+ 
+    <span class="keyword">private func</span> chain&lt;O&gt;(after seconds: <span class="type">Double</span>? = <span class="keyword">nil</span>,
+                          block chainingBlock: <span class="keyword">@escaping</span> (<span class="type">Out</span>) <span class="keyword">throws</span> -&gt; <span class="type">O</span>,
+                          queue: <span class="type">GCD</span>) -&gt; <span class="type">AsyncBlock</span>&lt;<span class="type">Out</span>, <span class="type">O</span>&gt; {
+        <span class="keyword">let</span> reference = <span class="type">Reference</span>&lt;<span class="type">O</span>&gt;()
+<span class="comment">/*新增*/</span>            reference.<span class="property">queue</span> = queue
+        <span class="keyword">let</span> dispatchWorkItem = <span class="type">DispatchWorkItem</span>(block: {
+<span class="comment">/*新增*/</span>        <span class="keyword">guard let</span> value = <span class="keyword">self</span>.<span class="property">output_</span>.<span class="property">value</span> <span class="keyword">else</span> {
+<span class="comment">/*新增*/</span>            <span class="keyword">return</span> reference.<span class="property">error</span> = <span class="keyword">self</span>.<span class="property">output_</span>.<span class="property">error</span>!
+<span class="comment">/*新增*/</span>        }
+<span class="comment">/*新增*/</span>        <span class="keyword">do</span> {
+<span class="comment">/*新增*/</span>            reference.<span class="property">value</span> = <span class="keyword">try</span> <span class="call">chainingBlock</span>(value)
+<span class="comment">/*新增*/</span>        } <span class="keyword">catch</span> {
+<span class="comment">/*新增*/</span>            reference.<span class="property">error</span> = error
+<span class="comment">/*新增*/</span>        }
+        })
+
+    ...
+    }
+
+...
+
+}
+</code></pre><p>如此一來, 就可以對 <code>AsyncBlock</code> 拓展 <code>catch(_:)</code></p><pre><code><span class="comment">/*新增*/</span>
+<span class="keyword">@discardableResult
+public func</span> `catch`(respondBlock: <span class="keyword">@escaping</span> (<span class="type">Error</span>) -&gt; <span class="type">Void</span>) -&gt; <span class="type">AsyncBlock</span>&lt;<span class="type">In</span>,<span class="type">Out</span>&gt; {
+    <span class="keyword">let</span> queue = output_.<span class="property">queue</span>!.queue
+    <span class="keyword">let</span> c = {
+        <span class="keyword">if let</span> error = <span class="keyword">self</span>.<span class="property">output_</span>.<span class="property">error</span> {
+            <span class="call">respondBlock</span>(error)
+        }
+    }
+    <span class="keyword">let</span> item = <span class="type">DispatchWorkItem</span>(block: c)
+    block.<span class="call">notify</span>(queue: queue, execute: item)
+    <span class="keyword">return self</span>
+}
+</code></pre><p>實作單元測試:</p><pre><code><span class="keyword">func</span> testAsyncMainWithCatch() {
+    <span class="keyword">let</span> expectation = <span class="keyword">self</span>.<span class="call">expectation</span>(description: <span class="string">"Expected on main queue"</span>)
+    <span class="keyword">var</span> calledStuffAfterSinceAsync = <span class="keyword">false</span>
+    <span class="type">Async</span>.<span class="call">main</span> {
+        <span class="keyword">try self</span>.<span class="call">alwaysError</span>()
+    }.<span class="keyword">catch</span> { (error) <span class="keyword">in</span>
+        <span class="preprocessing">#if targetEnvironment(simulator)</span>
+        <span class="call">XCTAssert</span>(<span class="type">Thread</span>.<span class="property">isMainThread</span>, <span class="string">"Should be on main thread (simulator)"</span>)
+        <span class="preprocessing">#else</span>
+        <span class="call">XCTAssertEqual</span>(<span class="call">qos_class_self</span>(), <span class="call">qos_class_main</span>())
+        <span class="preprocessing">#endif</span>
+        <span class="call">XCTAssert</span>(calledStuffAfterSinceAsync, <span class="string">"Should be async"</span>)
+        expectation.<span class="call">fulfill</span>()
+    }
+    calledStuffAfterSinceAsync = <span class="keyword">true</span>
+    waitForExpectations(timeout: timeMargin, handler: <span class="keyword">nil</span>)
+}
+</code></pre><p>以上, 於 fork 的 GitHub project 內持續補上 test case! GitHub 連結: https://github.com/ytyubox/Async</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/iOS-Vibration</guid><title>iOS 實機測試震動</title><description>iOS Vibration note</description><link>https://ytyubox.github.io/posts/2020/iOS-Vibration</link><pubDate>Sun, 5 Jan 2020 12:20:00 +0000</pubDate><content:encoded><![CDATA[<h1>iOS 實機測試震動</h1><img src="https://github.com/ytyubox/tryViber-iOS/blob/master/demo-tryViber.jpeg?raw=true"/><p>每次時間不可改，最小間隔 0.5 秒</p><pre><code><span class="keyword">import</span> AudioToolbox
+
+<span class="type">AudioServicesPlayAlertSound</span>(<span class="type">SystemSoundID</span>(kSystemSoundID_Vibrate))
+</code></pre><h2>套用 Swift 5.1 的 <code>Property Wrapper</code></h2><pre><code><span class="keyword">import</span> AudioToolbox
+
+<span class="keyword">@propertyWrapper
+struct</span> SoundId {
+    <span class="keyword">typealias</span> Value = <span class="type">UInt32</span>
+    <span class="keyword">var</span> projectedValue: <span class="type">SystemSoundID</span>
+    <span class="keyword">var</span> wrappedValue: <span class="type">Value</span> {
+        <span class="keyword">didSet</span> {
+            projectedValue = .<span class="keyword">init</span>(<span class="keyword">self</span>.<span class="property">wrappedValue</span>)
+        }
+    }
+    
+    <span class="keyword">init</span>(wrappedValue: <span class="type">Value</span>) {
+        <span class="keyword">self</span>.<span class="property">projectedValue</span> = <span class="type">SystemSoundID</span>(wrappedValue)
+        <span class="keyword">self</span>.<span class="property">wrappedValue</span> = wrappedValue
+    }
+}
+
+<span class="keyword">class</span> SOMECLASS {
+    <span class="keyword">@SoundId var</span> currentSystemEffect = kSystemSoundID_Vibrate
+    
+    <span class="keyword">func</span> playSound() {
+        <span class="type">AudioServicesPlaySystemSound</span>(<span class="keyword">self</span>.$currentSystemEffect)
+    }
+}
+</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/01/04/Git-team-init</guid><title>新團隊建立 Git 指南 (一)</title><description>Git 團隊手冊中針對新團隊的章節</description><link>https://ytyubox.github.io/posts/2020/01/04/Git-team-init</link><pubDate>Sat, 4 Jan 2020 16:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>新團隊建立 Git 指南 (一)</h1><img src="https://i.imgur.com/LLQU4xt.jpg"/><p>在 Git 團隊使用手冊中, 介紹了如何在多人團隊中建立 Git 的方式.</p><h2>1. 耐心與同情心</h2><p>有同情心的團隊會為新手留下說明操作程序的文件, 回答新人問題. "Help me, help you.", 就是專案領導人該有的口號!</p><p>目標: 一致性的部分都留下詳細的指引, 樣板及自動化腳本, 將標準之外的情況視為自己應該解決的程序問題.</p><img src="https://i.imgur.com/qvkTcc9.png"/><p>推薦影片教學 https://player.oreilly.com/videos/9781491912003</p><h2>2. 建立 Repository</h2><p>不論選擇 GitHub/GitLab, 第一需要考慮的問題是: 該用哪個賬號建立 Repo? 首先, 在 repo 的 URL 通常會以 <code>https://&lt;代管系統主機&gt;.com/&lt;REPO擁有者&gt;/</code>, 端看這個專案(repo) 是屬於自己或是或是所屬的機構(公司), 選擇專案的擁有者.</p><p>第二, 決定專案各種權限: 對於開源專案, <code>READ</code> 的權限是開發的, 但對於 <code>WRITE</code> 的權限分成組織開發者, 非組織貢獻者. 對於這些分別的最大差別, 最主要的分別是: 可以同意寫入的能力, 例如一位非組織貢獻者想貢獻一部份的 code modification, 若使用的是 <code>GitHub</code> 服務, 則必須 <code>fork</code> 一份在自己賬號的複製專案, 推送改動, 並發起 <code>Pull Request</code>, 由組織開發者同意是否同意寫入.</p><h2>3. 沒有寫入權限的專案成員對專案的貢獻步驟</h2><ol><li>not folk</li></ol><pre><code>git colne <span class="type">REPOURL REPO</span>
+cd <span class="type">REPO</span>
+git remote add personal <span class="type">MYREPOURL</span>
+git branch my-proposal
+git checkout my-proposal
+
+# <span class="keyword">do</span> all the concreate change
+
+git add <span class="type">FILE</span>
+git commit -m 'finish change start porposal'
+git push personal my-proposal
+</code></pre><p>發起 Pull Request</p><ol start="2"><li>folk</li></ol><p>在專案託管系統 folk 一份在自己賬號之下</p><pre><code>git clone <span class="type">MYFORKURL REPO</span>
+cd <span class="type">REPO</span>
+git remote add <span class="type">REPOURL</span> offical
+git branch my-proposal
+git checkout my-proposal
+
+# <span class="keyword">do</span> all the concreate change
+
+git add <span class="type">FILE</span>
+git commit -m 'finish change start porposal'
+git push original my-proposal
+</code></pre><p>一樣發起 Pull Request</p><p>下一篇將介紹維護者要如何處理 Pull Request</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish</guid><title>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</title><description>使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站</description><link>https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish</link><pubDate>Wed, 1 Jan 2020 20:32:00 +0000</pubDate><content:encoded><![CDATA[<h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-no-highlight">git clone https://github.com/JohnSundell/Publish.git
+cd Publish
+make
+</code></pre><p>透過 <code>MakeFile</code>, 將安裝 <code>publish-cli</code> 至 <code>/usr/local/bin/</code>, 就可以使用 <code>publish</code></p><p>Step 2: 靜態網頁建立</p><pre><code class="language-no-highlight">mkdir __WEBSITE_NAME__ 
+cd __WEBSITE_NAME__
+publish new
+</code></pre><p>透過 <code>PublishCLI</code> 建立 <code>Package.swift</code>, 之後可以用 XCode 編輯</p><h2>Publish 整體架構</h2><pre><code class="language-no-highlight">├── Content/
+│   ├── index.md
+│   └── posts/
+│       ├── first-post.md
+│       └── index.md
+├── Package.swift
+├── Resources/
+└── Sources/
+    └── __WEBSITE_NAME__/
+        └── main.swift
+
+</code></pre><p>Publish 框架下使用 <code>SPM</code> 來處理整個由 <code>Read *.md</code> ~&gt; <code>gen *.html, Theme.css</code> ~&gt; <code>Site metadata</code> 的過程, 程式相依資源是由 <code>Package.swift</code>控制, 分頁的讀取由 <code>main.swift</code>觸發, 文章的來源是相依從 <code>Content/</code> 取得, 主要設計由 main.swift 的 <code>try SomeWebsite().publish(...)</code>, 其中包含基本網站的 metaData, building 的介入 等.</p><pre><code><span class="keyword">import</span> Foundation
+<span class="keyword">import</span> Publish
+<span class="keyword">import</span> Plot
+
+<span class="comment">// This type acts as the configuration for your website.</span>
+<span class="keyword">struct</span> Publishdemo: <span class="type">Website</span> {
+    <span class="keyword">enum</span> SectionID: <span class="type">String</span>, <span class="type">WebsiteSectionID</span> {
+        <span class="keyword">case</span> posts
+    }
+
+    <span class="keyword">struct</span> ItemMetadata: <span class="type">WebsiteItemMetadata</span> {
+        <span class="comment">// Add any site-specific metadata that you want to use here.</span>
+    }
+
+    <span class="comment">// Update these properties to configure your website:</span>
+    <span class="keyword">var</span> url = <span class="type">URL</span>(string: <span class="string">"https://your-website-url.com"</span>)!
+    <span class="keyword">var</span> name = <span class="string">"Publishdemo"</span>
+    <span class="keyword">var</span> description = <span class="string">"A description of Publishdemo"</span>
+    <span class="keyword">var</span> language: <span class="type">Language</span> { .<span class="dotAccess">english</span> }
+    <span class="keyword">var</span> imagePath: <span class="type">Path</span>? { <span class="keyword">nil</span> }
+}
+
+<span class="keyword">try</span> <span class="type">Publishdemo</span>().<span class="call">publish</span>(withTheme: .<span class="dotAccess">foundation</span>)
+</code></pre><h2>使用 GitHub page 作為 發佈空間</h2><p>GitHub 在每個賬號下可以有固定一個免費的靜態網站的空間, 原意是可以作為 open source 的 doc 或是基本的 intro, 而作為個人使用賬號, 可以用來作為個人的 blog. 1. 與GitHub 建立一個 repo, 名稱必須是<code>該賬號.github.io</code> , 這樣才可以被 GitHub 識別. 2. (很重要) 不要對哪個 repo 作任何 push. 3. 與你的 <code>main.swift</code> 內建的<code>.publish(withTheme:)</code>修改為一下</p><pre><code><span class="keyword">try</span> <span class="type">MyWebSite</span>().<span class="call">publish</span>(
+    withTheme: .<span class="dotAccess">foundation</span>,
+    deployedUsing: .<span class="call">git</span>(<span class="string">"https://github.com/ytyubox/ytyubox.github.io"</span>)
+)
+</code></pre><ol start="4"><li>使用 terminal 指令 <code>publish deploy</code> 直接上傳到 GitHub.</li></ol>]]></content:encoded></item></channel></rss>
