@@ -64,6 +64,7 @@ h1 {
 
 h2 {
 	margin: 20px 0;
+	text-align: left;
 }
 
 p {
@@ -143,6 +144,7 @@ color:red;
 
 footer {
 	color: #8a8a8a;
+	text-align: center;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -164,6 +166,16 @@ footer {
 	}
 }
 
+code {
+    background: #DE2451;
+    padding: 2px 8px;
+    color: #fff;
+    text-shadow: none;
+    font-size: 0.8em;
+    border-radius: 12px;
+    font-weight: medium;
+}
+
 pre {
 	margin-bottom: 1.5em;
 	background-color: #1a1a1a;
@@ -173,6 +185,7 @@ pre {
 
 pre code {
 	font-family: monospace;
+	background-color: #1a1a1a;
 	display: block;
 	padding: 0 20px;
 	color: #a9bcbc;
@@ -180,6 +193,7 @@ pre code {
 	font-size: 0.95em;
 	overflow-x: auto;
 	white-space: pre;
+	text-align: left;
 	-webkit-overflow-scrolling: touch;
 }
 
