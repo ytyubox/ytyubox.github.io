@@ -246,3 +246,42 @@ pre code .preprocessing {
 footer p {
 	text-align:center;
 }
+
+blockquote {
+    position: relative;
+    padding: 32px;
+    padding-top: 64px;
+    margin: 64px 0px;
+}
+
+blockquote::before {
+    font-family: Arial;
+    font-style: italic;
+    content: "\201C";
+    font-size: 256px;
+    line-height: 64px;
+    padding-left: 8px;
+    position: absolute;
+    top: 48px;
+    right: 32px;
+}
+
+blockquote p {
+    font-size: 24px;
+    font-family: Open Sans;
+    font-style: italic;
+}
+
+
+.note {
+    margin-bottom: 64px;
+    border-radius: 16px;
+    padding: 32px;
+    text-shadow: none;
+}
+
+.note {
+    border: 1px solid #f5e6a2;
+    background: #f9f4e2;
+    color: #333;
+}
