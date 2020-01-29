@@ -1,4 +1,73 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Wed, 29 Jan 2020 10:14:20 +0000</lastBuildDate><pubDate>Wed, 29 Jan 2020 10:14:20 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Publish-apply-GA-SEO</guid><title>Swift Publish 套用 Google Analytics 與 SEO</title><description>為 Publish 套用 Google 分析與搜尋引擎優化</description><link>https://ytyubox.github.io/posts/2020/Publish-apply-GA-SEO</link><pubDate>Thu, 9 Jan 2020 02:29:00 +0000</pubDate><content:encoded><![CDATA[<h1>Swift Publish 套用 Google Analytics 與 SEO</h1>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Asyc-GitHub-exp</guid><title>使用 Async 輕量非同步套件鏈式調用非同步行為</title><description>Async explain and try to extend it</description><link>https://ytyubox.github.io/posts/2020/Asyc-GitHub-exp</link><pubDate>Mon, 6 Jan 2020 22:23:00 +0000</pubDate><content:encoded><![CDATA[<h1>使用 Async 輕量非同步套件鏈式調用非同步行為</h1><p>Async: <a href="https://github.com/duemunk/Async">github.com/duemunk/Async</a></p><p>2019 年介紹 <code>Combine</code> 時 <a href="https://ithelp.ithome.com.tw/users/20119945/ironman/2272">2019鐵人賽介紹 Combine 系列</a>, 對於連續的非同步事件的調用, 我們會遇到回呼地獄(Callback hell), 也就是多筆具相依的非同步步驟響應辦法.<br><br>## <code>Async</code> 的解法 相較於原本的 DispatchQueue 的版本:</p><pre><code><span class="type">DispatchQueue</span>.<span class="call">global</span>(qos: .<span class="dotAccess">userInitiated</span>).<span class="call">async</span> {
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Wed, 29 Jan 2020 13:53:28 +0000</lastBuildDate><pubDate>Wed, 29 Jan 2020 13:53:28 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/01/28/super-useful-mac-tip</guid><title>超級超好用的蘋果電腦密技</title><description>介紹一些要用的 macOS 使用方式</description><link>https://ytyubox.github.io/posts/2020/01/28/super-useful-mac-tip</link><pubDate>Tue, 28 Jan 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>超級超好用的蘋果電腦密技 (一) 文字編輯篇</h1><p>我認識很多朋友因為覺得 macOS 在使用上比 Windows 方便而買了一台 MacBook, 但是由於對作業系統的整體邏輯不熟, 常常會有許多問題請教. 例如輸入法切換, 好用的工具程式等等. 這次介紹我的 macOS 日常使用的技巧與一些配置. 這次是在 macOS 10.15.2 的環境下所下的指令. 文章有提供一些練習的方式, 如果覺得不錯可以留言給我一些回饋.</p><h2>文字編輯方式</h2><h3>1. Windows 的向後刪除</h3><p>在中文與英文一般的方式下, <code>delete</code> 的文字刪除方向是向左刪除, 也就是文字段落的前方. 在 Windows 上, 可以使用 <code>DEL</code> 來向左刪除, 而 macOS 的可以使用 <code>fn</code> +<code>delete</code> 來達到同樣效果.</p><label>在這練習</label><textarea> type="text" name="delete" value="點我進入編輯模式: 使用 fn + delete 來反向刪除"</textarea><h3>2. 快速移動文字指標</h3><p>很多時候會有移動文字指標並繼續打字的情況發生, 在 macOS 可以使用 <code>option</code> + <code>左右箭頭</code>, 來依照文字快速移動, 在單行的文字修改可以快速跳躍文字段落. 如果想快速移動到單行的最前/最後, 可以使用 <code>command</code> + <code>左右箭頭</code> 來移動, 我在打這個段落的時候就使用很多次這個技巧, 非常實用.</p><div class "practice">
+<label>在這練習</label>
+<textarea>點我進入編輯模式: 使用 option + 左右箭頭, 快速移動 CURSOR 到上一個/下一個單字(單字範圍由 macOS 決定的)</textarea>
+<textarea>點我進入編輯模式: 使用 command + 左右箭頭, 快速移動 cursor 到一行的最前與最後</textarea>
+</div><h3>3. 段落選取方式</h3><p>可以用鍵盤和觸碰版快速完成文字選取的任務.</p><p>鍵盤使用類似上面移動文字指標的方式, 不過這個要加上 <code>shift</code>, 可以在段落中間使用 <code>command</code> + <code>shift</code> + <code>左右箭頭</code>, 選取一半的文字.</p><div class "practice">
+    <label>在這練習</label>
+    <textarea> type="text" name="selecting" value="點我進入編輯模式:  使用 shift + command/optional + 箭頭來快速選取文字, shift 通常都是複選的指令"</textarea>
+</div><p>觸屏版可以使用 3 指移動的方式選取, 這功能需要一系列的設定: 如果你的 Mac 配備「 <a href="https://en.wikipedia.org/wiki/Force_Touch">力度觸控軌跡板</a> 」，開啟三指拖曳功能的步驟如下。</p><ol>
+    <li>
+        打開「系統偏好設定」的「輔助使用」。
+        <img src="https://i.imgur.com/ZiMWnbV.png">
+    </li>
+    <li> 從左側選項中選擇「滑鼠與觸控式軌跡板」。</li>
+    <li> 按一下「觸控式軌跡板選項」。</li>
+    <li> 勾選「啟用拖移」旁的勾選框。 </li>
+    <li> 從相關的彈出式選單中，選擇「三指拖曳」功能，旁邊就會出現剔號。</li>
+    <li> 按一下「確定」。</li>
+</ol><img src="https://i.imgur.com/rqhGf5r.png">
+
+
+
+<div></div>
+
+<h3>4. 像 iPhone 一樣用說話來打字 (聽寫) </h3>
+
+<img src="https://help.apple.com/assets/5DB8A4A0094622D56C6D1279/5DB8A4AE094622D56C6D1281/zh_TW/30671b9e91fdd1b0040201b023745266.png">
+
+圖片來自 <a href="https://support.apple.com/zh-tw/guide/mac-help/mh40584/mac">https://support.apple.com/zh-tw/guide/mac-help/mh40584/mac</a> 
+
+<div></div>
+
+可以在任何可輸入的位置聽寫文字. macOS 會將您的字詞傳送至 Apple 伺服器進行分析並轉換為文字, 也因此只能在有網路的使用使用. 開啟聽寫的步驟如下: 
+
+<ol>
+<li>開啟「系統偏好設定」的「鍵盤」.</li>
+<img src="https://i.imgur.com/xDGGUaB.png">
+    <li>點擊「聽寫」.</li>
+    <li>按一下「開啟」。若有提示出現，按一下「啟用聽寫」。</li>
+    <li>選擇聽寫啟用使用所使用的語言.</li>
+    <li>選擇啟用聽寫的快速鍵. </li>
+</ol>
+
+
+
+
+<img src="https://i.imgur.com/DrZlGFt.png" width="780px">
+
+<div class "practice">
+    <label>在這練習</label>
+    <textarea> type="text" name="selecting" value="點我進入編輯模式:  使用 fu + fu 來啟動聽寫, 請注意不要影響旁人"</textarea>
+</div>
+
+
+
+
+
+
+
+
+
+以上是一些我常用或是有趣的 macOS 文字秘技, 歡迎留言告訴我你的想法.
+
+參考資訊:
+<ol>
+    
+ <li>apple - 為 Force Touch 觸控式軌跡板開啟「三指拖移」 - Apple 支援: https://support.apple.com/zh-tw/HT204609</li>
+ <li>wiki - Force Touch - Wikipedia: https://en.wikipedia.org/wiki/Force_Touch</li>
+<li>apple - 在 Mac 上聽寫訊息和文件 - Apple 支援:  https://support.apple.com/zh-tw/guide/mac-help/mh40584/mac</li>
+
+</ol>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Publish-apply-GA-SEO</guid><title>Swift Publish 套用 Google Analytics 與 SEO</title><description>為 Publish 套用 Google 分析與搜尋引擎優化</description><link>https://ytyubox.github.io/posts/2020/Publish-apply-GA-SEO</link><pubDate>Thu, 9 Jan 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>Swift Publish 套用 Google Analytics 與 SEO</h1>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Asyc-GitHub-exp</guid><title>使用 Async 輕量非同步套件鏈式調用非同步行為</title><description>Async explain and try to extend it</description><link>https://ytyubox.github.io/posts/2020/Asyc-GitHub-exp</link><pubDate>Mon, 6 Jan 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>使用 Async 輕量非同步套件鏈式調用非同步行為</h1><p>Async: <a href="https://github.com/duemunk/Async">github.com/duemunk/Async</a></p><p>2019 年介紹 <code>Combine</code> 時 <a href="https://ithelp.ithome.com.tw/users/20119945/ironman/2272">2019鐵人賽介紹 Combine 系列</a>, 對於連續的非同步事件的調用, 我們會遇到回呼地獄(Callback hell), 也就是多筆具相依的非同步步驟響應辦法.<br><br>## <code>Async</code> 的解法 相較於原本的 DispatchQueue 的版本:</p><pre><code><span class="type">DispatchQueue</span>.<span class="call">global</span>(qos: .<span class="dotAccess">userInitiated</span>).<span class="call">async</span> {
     <span class="keyword">let</span> value = <span class="number">10</span>
     <span class="type">DispatchQueue</span>.<span class="call">global</span>(qos: .<span class="dotAccess">background</span>).<span class="call">async</span> {
         <span class="keyword">let</span> text = <span class="string">"Score:</span> \(value)<span class="string">"</span>
@@ -88,7 +157,7 @@ public func</span> `catch`(respondBlock: <span class="keyword">@escaping</span> 
     calledStuffAfterSinceAsync = <span class="keyword">true</span>
     waitForExpectations(timeout: timeMargin, handler: <span class="keyword">nil</span>)
 }
-</code></pre><p>以上, 於 fork 的 GitHub project 內持續補上 test case! GitHub 連結: https://github.com/ytyubox/Async</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/iOS-Vibration</guid><title>iOS 實機測試震動</title><description>iOS Vibration note</description><link>https://ytyubox.github.io/posts/2020/iOS-Vibration</link><pubDate>Sun, 5 Jan 2020 12:20:00 +0000</pubDate><content:encoded><![CDATA[<h1>iOS 實機測試震動</h1><img src="https://github.com/ytyubox/tryViber-iOS/blob/master/demo-tryViber.jpeg?raw=true"/><p>每次時間不可改，最小間隔 0.5 秒</p><pre><code><span class="keyword">import</span> AudioToolbox
+</code></pre><p>以上, 於 fork 的 GitHub project 內持續補上 test case! GitHub 連結: https://github.com/ytyubox/Async</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/iOS-Vibration</guid><title>iOS 實機測試震動</title><description>iOS Vibration note</description><link>https://ytyubox.github.io/posts/2020/iOS-Vibration</link><pubDate>Sun, 5 Jan 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>iOS 實機測試震動</h1><img src="https://github.com/ytyubox/tryViber-iOS/blob/master/demo-tryViber.jpeg?raw=true"/><p>每次時間不可改，最小間隔 0.5 秒</p><pre><code><span class="keyword">import</span> AudioToolbox
 
 <span class="type">AudioServicesPlayAlertSound</span>(<span class="type">SystemSoundID</span>(kSystemSoundID_Vibrate))
 </code></pre><h2>套用 Swift 5.1 的 <code>Property Wrapper</code></h2><pre><code><span class="keyword">import</span> AudioToolbox
@@ -116,7 +185,7 @@ struct</span> SoundId {
         <span class="type">AudioServicesPlaySystemSound</span>(<span class="keyword">self</span>.$currentSystemEffect)
     }
 }
-</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/01/04/Git-team-init</guid><title>新團隊建立 Git 指南 (一)</title><description>Git 團隊手冊中針對新團隊的章節</description><link>https://ytyubox.github.io/posts/2020/01/04/Git-team-init</link><pubDate>Sat, 4 Jan 2020 16:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>新團隊建立 Git 指南 (一)</h1><img src="https://i.imgur.com/LLQU4xt.jpg"/><p>在 Git 團隊使用手冊中, 介紹了如何在多人團隊中建立 Git 的方式.</p><h2>1. 耐心與同情心</h2><p>有同情心的團隊會為新手留下說明操作程序的文件, 回答新人問題. "Help me, help you.", 就是專案領導人該有的口號!</p><p>目標: 一致性的部分都留下詳細的指引, 樣板及自動化腳本, 將標準之外的情況視為自己應該解決的程序問題.</p><img src="https://i.imgur.com/qvkTcc9.png"/><p>推薦影片教學 https://player.oreilly.com/videos/9781491912003</p><h2>2. 建立 Repository</h2><p>不論選擇 GitHub/GitLab, 第一需要考慮的問題是: 該用哪個賬號建立 Repo? 首先, 在 repo 的 URL 通常會以 <code>https://&lt;代管系統主機&gt;.com/&lt;REPO擁有者&gt;/</code>, 端看這個專案(repo) 是屬於自己或是或是所屬的機構(公司), 選擇專案的擁有者.</p><p>第二, 決定專案各種權限: 對於開源專案, <code>READ</code> 的權限是開發的, 但對於 <code>WRITE</code> 的權限分成組織開發者, 非組織貢獻者. 對於這些分別的最大差別, 最主要的分別是: 可以同意寫入的能力, 例如一位非組織貢獻者想貢獻一部份的 code modification, 若使用的是 <code>GitHub</code> 服務, 則必須 <code>fork</code> 一份在自己賬號的複製專案, 推送改動, 並發起 <code>Pull Request</code>, 由組織開發者同意是否同意寫入.</p><h2>3. 沒有寫入權限的專案成員對專案的貢獻步驟</h2><ol><li>not folk</li></ol><pre><code>git colne <span class="type">REPOURL REPO</span>
+</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/01/04/Git-team-init</guid><title>新團隊建立 Git 指南 (一)</title><description>Git 團隊手冊中針對新團隊的章節</description><link>https://ytyubox.github.io/posts/2020/01/04/Git-team-init</link><pubDate>Sat, 4 Jan 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>新團隊建立 Git 指南 (一)</h1><img src="https://i.imgur.com/LLQU4xt.jpg"/><p>在 Git 團隊使用手冊中, 介紹了如何在多人團隊中建立 Git 的方式.</p><h2>1. 耐心與同情心</h2><p>有同情心的團隊會為新手留下說明操作程序的文件, 回答新人問題. "Help me, help you.", 就是專案領導人該有的口號!</p><p>目標: 一致性的部分都留下詳細的指引, 樣板及自動化腳本, 將標準之外的情況視為自己應該解決的程序問題.</p><img src="https://i.imgur.com/qvkTcc9.png"/><p>推薦影片教學 https://player.oreilly.com/videos/9781491912003</p><h2>2. 建立 Repository</h2><p>不論選擇 GitHub/GitLab, 第一需要考慮的問題是: 該用哪個賬號建立 Repo? 首先, 在 repo 的 URL 通常會以 <code>https://&lt;代管系統主機&gt;.com/&lt;REPO擁有者&gt;/</code>, 端看這個專案(repo) 是屬於自己或是或是所屬的機構(公司), 選擇專案的擁有者.</p><p>第二, 決定專案各種權限: 對於開源專案, <code>READ</code> 的權限是開發的, 但對於 <code>WRITE</code> 的權限分成組織開發者, 非組織貢獻者. 對於這些分別的最大差別, 最主要的分別是: 可以同意寫入的能力, 例如一位非組織貢獻者想貢獻一部份的 code modification, 若使用的是 <code>GitHub</code> 服務, 則必須 <code>fork</code> 一份在自己賬號的複製專案, 推送改動, 並發起 <code>Pull Request</code>, 由組織開發者同意是否同意寫入.</p><h2>3. 沒有寫入權限的專案成員對專案的貢獻步驟</h2><ol><li>not folk</li></ol><pre><code>git colne <span class="type">REPOURL REPO</span>
 cd <span class="type">REPO</span>
 git remote add personal <span class="type">MYREPOURL</span>
 git branch my-proposal
@@ -138,7 +207,7 @@ git checkout my-proposal
 git add <span class="type">FILE</span>
 git commit -m 'finish change start porposal'
 git push original my-proposal
-</code></pre><p>一樣發起 Pull Request</p><p>下一篇將介紹維護者要如何處理 Pull Request</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish</guid><title>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</title><description>使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站</description><link>https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish</link><pubDate>Wed, 1 Jan 2020 20:32:00 +0000</pubDate><content:encoded><![CDATA[<h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-no-highlight">git clone https://github.com/JohnSundell/Publish.git
+</code></pre><p>一樣發起 Pull Request</p><p>下一篇將介紹維護者要如何處理 Pull Request</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish</guid><title>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</title><description>使用 Markdown 編寫文章, 利用 Publish 框架, 架設靜態網站</description><link>https://ytyubox.github.io/posts/2020/bulid-static-web-by-publish</link><pubDate>Wed, 1 Jan 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>[#1] 如何透過 Publish 使用 100 % Swift code 建立 Blog</h1><p>起源: 2019 年, 接觸了剛起步的 <a href="https://www.swiftbysundell.com/">Swift by Sundell</a>, Sundell 是一個全職的作者, 不僅每週有固定的文章與 Podcast, 還不時的在各大 Swift 有關的演講分享, 而在 2019 年 12 月底, Sundell 推出了 <a href="https://github.com/JohnSundell/Publish">Publish</a></p><iframe width="560" height="315" src="https://www.youtube.com/embed/pAy6v4MEsnc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Jhon Sundell @SwiftServerConf, 2019/11</p><blockquote><p><code>Publish</code> 於 2020 年 1 月 版號是 <code>v0.1.0</code>, 代表 還有不少的功能還沒實現, Sundell 對於新功能是採用 <code>PR please</code> 的方式, 也就是不接受 issue, 只接受貢獻, 因此某種程度是更新較慢的.</p></blockquote><h2>Publish 框架環境與安裝</h2><ol><li>Swift 5.1</li><li>Swift Package manager: swift-tools-version:5.1</li><li>PublishCLI: Publish <code>v0.1.0</code></li></ol><p>Step 1: 安裝 <code>Publish</code></p><pre><code class="language-no-highlight">git clone https://github.com/JohnSundell/Publish.git
 cd Publish
 make
 </code></pre><p>透過 <code>MakeFile</code>, 將安裝 <code>publish-cli</code> 至 <code>/usr/local/bin/</code>, 就可以使用 <code>publish</code></p><p>Step 2: 靜態網頁建立</p><pre><code class="language-no-highlight">mkdir __WEBSITE_NAME__ 

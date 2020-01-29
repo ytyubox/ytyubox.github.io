@@ -66,7 +66,9 @@ h2 {
 	margin: 20px 0;
 	text-align: left;
 }
-
+h3 {
+	margin: 40px 0;
+}
 p {
 	margin-bottom: 10px;
 	text-align: left;
@@ -77,7 +79,7 @@ a {
 }
 
 nav ul a:hover {
-color:red;
+	color:red;
 }
 
 .description {
@@ -138,6 +140,7 @@ color:red;
 .content {
 	margin-bottom: 40px;
 	line-height: 1.5em;
+	text-align: left;
 }
 
 .browse-all {
@@ -176,13 +179,13 @@ footer {
 }
 
 code {
-    background: #DE2451;
-    padding: 2px 8px;
-    color: #fff;
-    text-shadow: none;
-    font-size: 0.8em;
-    border-radius: 12px;
-    font-weight: medium;
+	background: #DE2451;
+	padding: 2px 8px;
+	color: #fff;
+	text-shadow: none;
+	font-size: 0.8em;
+	border-radius: 12px;
+	font-weight: medium;
 }
 
 pre {
@@ -247,6 +250,16 @@ footer p {
 	text-align:center;
 }
 
+
+input{
+	width: 100%;
+}
+textarea {
+	width: 100%;
+	resize: none;
+	padding: 15px;
+}
+
 blockquote {
     position: relative;
     padding: 32px;
@@ -284,4 +297,8 @@ blockquote p {
     border: 1px solid #f5e6a2;
     background: #f9f4e2;
     color: #333;
+}
+
+li {
+	margin-left: 30px;
 }
