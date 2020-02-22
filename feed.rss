@@ -1,4 +1,93 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Sat, 22 Feb 2020 07:07:32 +0000</lastBuildDate><pubDate>Sat, 22 Feb 2020 07:07:32 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/02/12/CryptoKit</guid><title>iOS 13 針對加密的framework：CryptoKit</title><description>介紹 CryptoKit 與 MD5 的使用</description><link>https://ytyubox.github.io/posts/2020/02/12/CryptoKit</link><pubDate>Wed, 12 Feb 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>iOS 13 針對加密的framework：CryptoKit</h1><p>以往要使用加密的函式時，需要接觸 C api，依照 StackOverflow 上的解答，可以使用 <code>CC_MD5</code></p><blockquote><p>在 C 語言 需 <code>#include &lt;openssl/md4.h&gt;</code></p></blockquote><p>StackOverflow link :https://stackoverflow.com/a/32166735/10172299</p><h2>iOS 的 CryptoKit</h2><pre><code><span class="keyword">import</span> CryptoKit
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Sat, 22 Feb 2020 09:26:23 +0000</lastBuildDate><pubDate>Sat, 22 Feb 2020 09:26:23 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/SwiftCLI-helloworld</guid><title>使用 Swift Package Manager 建立 Command line tool</title><description>如何使用 Swift Package Manager(SPM) 與 Linux/Unix 互動</description><link>https://ytyubox.github.io/posts/SwiftCLI-helloworld</link><pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>使用 Swift Package Manager 建立 Command line tool</h1><p>Command line tool 有時候可以方便的處理一些常見的任務，有時候可以將開放中遇到的瑣碎事情自動化處理，例如 <a href="https://github.com/yonaskolb/XcodeGen">XcodeGen</a>就是一個有趣的應用。這篇文章將教你如何使用 Swift Package Manager(SPM) 與 Linux/Unix 互動。</p><h2>先備知識</h2><ol><li>基礎 Swift 語法知識，若以 Swift.org 的Language guide 目錄為標準，則是 <code>The Basic</code> 至 <code>Methods</code>。</li><li>基礎 Swift <code>Package.init</code> 參數使用，如 <code>name</code>, <code>dependencies</code>, <code>targets</code>。</li><li>基礎 Linux 語法知識，如 <code>ls -alR</code>, <code>Date</code>, <code>whoami</code>。</li></ol><h2>建立可執行的SPM - Hello world</h2><p>我們可以使用 Swift package manager 來建立一個新的 Package project。 如果你對 terminal 熟悉的話，可以閱讀更詳細的文件： <a href="https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md">Swift-package-manager/Usage.md</a>。</p><pre><code>$ swift package <span class="keyword">init</span> --type executable --name helloworld
+</code></pre><p>這段指令執行了一下事情： 在當前目錄建立一個名為 <code>helloworld</code> 的 可執行的Swift package。</p><p>你可以看到當前目錄建立了一些檔案，下面是使用 <a href="https://formulae.brew.sh/formula/tree"><code>tree</code></a> 的檔案夾結構：</p><pre><code>.
+├── <span class="type">Package</span>.<span class="property">swift</span>
+├── <span class="type">README</span>.<span class="property">md</span>
+├── <span class="type">Sources</span>/
+│   └── helloworld/
+│       └── main.<span class="property">swift</span>
+└── <span class="type">Tests</span>/
+    ├── <span class="type">LinuxMain</span>.<span class="property">swift</span>
+    └── helloworldTests/
+        ├── <span class="type">XCTestManifests</span>.<span class="property">swift</span>
+        └── helloworldTests.<span class="property">swift</span>
+</code></pre><p>這時我們可以透過以下指令直接執行這個程式</p><pre><code>$ swift build
+$ swift run
+<span class="type">Hello</span>, world!
+</code></pre><p>如此一來就完成基礎的 Command line tool 了！</p><h2><code>Package.swift</code> 取代了 <code>.xcodeproj</code></h2><p>若是你有 Xcode 11, 可以直接打開 <code>Package.swift</code> 就會自動 link 所有檔案並建立 <code>.swiftpm</code></p><pre><code>$ <span class="keyword">open</span> <span class="type">Package</span>.<span class="property">swift</span>
+</code></pre><p>可以看到 Package.swift 成為在 XCode 的第一個檔案，以往熟悉的 <code>.xcodeproj</code>不見了。</p><img src="https://i.imgur.com/0e7f6XY.png"/><h2>在執行檔使用第三方函式庫</h2><p>在這裏我們為 helloworld 增加讀取 arguments 的功能，我們可以使用其他已經完善的第三方函式庫，這次我們使用 <code>SPMUtility</code>， 這是來自 Apple 的開源專案，SPM 可以透過 Git 目錄的讀取，執行套件管理並安裝到專案中。我們在 <code>Package.swift</code> 中套用以下的修改：</p><pre><code><span class="comment">// swift-tools-version:5.1</span>
+
+<span class="keyword">import</span> PackageDescription
+
+<span class="keyword">let</span> package = <span class="type">Package</span>(
+	name: <span class="string">"helloworld"</span>,
+	dependencies: [
+		.<span class="call">package</span>(url: <span class="string">"https://github.com/apple/swift-package-manager.git"</span>, from: <span class="string">"0.1.0"</span>)
+	],
+	targets: [
+		.<span class="call">target</span>(
+			name: <span class="string">"helloworld"</span>,
+			dependencies: [<span class="string">"SPMUtility"</span>]),
+		.<span class="call">testTarget</span>(
+			name: <span class="string">"helloworldTests"</span>,
+			dependencies: [<span class="string">"helloworld"</span>]),
+	]
+)
+</code></pre><blockquote><p>因為函式庫的大小較大，建議網路速度較慢的讀者在這裏先回到 terminal 執行 <code>swift build</code>。</p></blockquote><p>要注意一旦編輯 <code>Package.swift</code> 檔後，必須使用主動儲存變更，XCode 才會更新專案，我們可以使用 File &gt; Save 來主動儲存。 <img src="https://i.imgur.com/S0KXjw8.png"/></p><h2>使用 <code>SPMUtility</code> 讀取 Arguments 與支援其他應用。</h2><p>為了實現讀取 Arguments 的功能，我們要到 <code>main.swift</code> 編寫程式碼！</p><p>首先，通過 import Foundation，我們取得使用者輸入的 Arguments。</p><pre><code><span class="keyword">import</span> Foundation
+<span class="keyword">import</span> SPMUtility
+
+<span class="keyword">let</span> arguments = <span class="type">ProcessInfo</span>.<span class="property">processInfo</span>.<span class="property">arguments</span>[<span class="number">1</span>...]
+
+<span class="call">print</span>(<span class="string">"Hello, world!"</span>)
+</code></pre><p>使用 ArgumentParser 使 Swift 可以讀取 Arguments。</p><pre><code><span class="keyword">let</span> parser = <span class="type">ArgumentParser</span>(usage: <span class="string">"&lt;options&gt;"</span>, overview: <span class="string">"A Swift command-line tool to say hello"</span>)
+<span class="keyword">let</span> nameArgument = parser.<span class="call">add</span>(option: <span class="string">"--name"</span>, shortName: <span class="string">"-n"</span>, kind: <span class="type">String</span>.<span class="keyword">self</span>, usage: <span class="string">"The name to greeting"</span>)
+<span class="keyword">let</span> repeatArgument = parser.<span class="call">add</span>(option: <span class="string">"--repeat"</span>, shortName: <span class="string">"-r"</span>, kind: <span class="type">Int</span>.<span class="keyword">self</span>, usage: <span class="string">"The repeat count of Hello"</span>)
+</code></pre><p>我們建立了單一 Parser，加入兩個可用的參數，<code>--name</code> 和 <code>--repeat</code>，透過 shortName 的參數建立各自的別名，kind 則建立指定的 Swift 型別。</p><p>接下來我們透過邏輯完成這個應用程式。</p><pre><code><span class="keyword">import</span> SPMUtility
+<span class="keyword">import</span> Foundation
+
+<span class="keyword">let</span> arguments = <span class="type">ProcessInfo</span>.<span class="property">processInfo</span>.<span class="property">arguments</span>[<span class="number">1</span>...]
+
+<span class="keyword">let</span> parser = <span class="type">ArgumentParser</span>(usage: <span class="string">"&lt;options&gt;"</span>, overview: <span class="string">"A Swift command-line tool to say hello"</span>)
+<span class="keyword">let</span> nameArgument = parser.<span class="call">add</span>(option: <span class="string">"--name"</span>, shortName: <span class="string">"-n"</span>, kind: <span class="type">String</span>.<span class="keyword">self</span>, usage: <span class="string">"The name to greeting"</span>)
+<span class="keyword">let</span> repeatArgument = parser.<span class="call">add</span>(option: <span class="string">"--repeat"</span>, shortName: <span class="string">"-r"</span>, kind: <span class="type">Int</span>.<span class="keyword">self</span>, usage: <span class="string">"The repeat count of Hello"</span>)
+
+<span class="keyword">do</span> {
+    <span class="keyword">let</span> parsedArguments = <span class="keyword">try</span> parser.<span class="call">parse</span>(<span class="type">Array</span>(arguments))
+    <span class="keyword">let</span> name = parsedArguments.<span class="call">get</span>(nameArgument) ?? <span class="string">"world"</span>
+    <span class="keyword">var</span> repeatCount = parsedArguments.<span class="call">get</span>(repeatArgument) ?? <span class="number">0</span>
+	repeatCount = repeatCount &gt; <span class="number">0</span> ? repeatCount : <span class="number">1</span>
+	<span class="keyword">var</span> helloRepeat = [<span class="string">"Hello"</span>]
+	<span class="keyword">for _ in</span> <span class="number">1</span>..&lt;repeatCount {
+		helloRepeat.<span class="call">append</span>(<span class="string">"hello"</span>)
+	}
+	<span class="keyword">let</span> holloSentence = helloRepeat.<span class="call">joined</span>(separator: <span class="string">", "</span>)
+    <span class="call">print</span>(<span class="string">"</span>\(holloSentence)<span class="string">,</span> \(name)<span class="string">"</span>)
+} <span class="keyword">catch</span> {
+    <span class="call">print</span>(<span class="string">"helloworld greeting failed:</span> \(error)<span class="string">"</span>)
+}
+
+</code></pre><p>現在，我們來測試看看！在 terminal 裡執行以下指令，你應該看到應用程式的結果。</p><pre><code>$ swift run helloworld --name yu --<span class="keyword">repeat</span> <span class="number">3</span>
+<span class="type">Hello</span>, hello, hello, yu
+</code></pre><p>ArgumentParser 同時也提供 <code>--help</code> 的功能。</p><pre><code>$ swift run swift run helloworld --help
+<span class="type">OVERVIEW</span>: <span class="type">A Swift</span> command-line tool to say hello
+
+<span class="type">USAGE</span>: helloworld &lt;options&gt;
+
+<span class="type">OPTIONS</span>:
+  --name, -n     <span class="type">The</span> title to greeting
+  --<span class="keyword">repeat</span>, -r   <span class="type">The</span> <span class="keyword">repeat</span> count of <span class="type">Hello</span>
+  --help         <span class="type">Display</span> available options
+</code></pre><h2>將 SPM 打包並安裝到 Unix 上</h2><p>在經歷了各種測試後，我們的 helloworld 已經可以作為一個日常的使用工具，透過以下的方式，將執行檔安裝到 terminal 上。</p><pre><code>$ swift build --configuration release
+$ cp -f .<span class="dotAccess">build</span>/release/helloworld /usr/local/bin/helloworld
+</code></pre><p>如此一來，就可以使用了！</p><pre><code>$ helloworld --help
+<span class="type">OVERVIEW</span>: <span class="type">A Swift</span> command-line tool to say hello
+
+<span class="type">USAGE</span>: helloworld &lt;options&gt;
+
+<span class="type">OPTIONS</span>:
+  --name, -n     <span class="type">The</span> title to greeting
+  --<span class="keyword">repeat</span>, -r   <span class="type">The</span> <span class="keyword">repeat</span> count of <span class="type">Hello</span>
+  --help         <span class="type">Display</span> available options
+</code></pre><p>以上，就是如何製作一個CLI！</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/02/12/CryptoKit</guid><title>iOS 13 針對加密的framework：CryptoKit</title><description>介紹 CryptoKit 與 MD5 的使用</description><link>https://ytyubox.github.io/posts/2020/02/12/CryptoKit</link><pubDate>Wed, 12 Feb 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>iOS 13 針對加密的framework：CryptoKit</h1><p>以往要使用加密的函式時，需要接觸 C api，依照 StackOverflow 上的解答，可以使用 <code>CC_MD5</code></p><blockquote><p>在 C 語言 需 <code>#include &lt;openssl/md4.h&gt;</code></p></blockquote><p>StackOverflow link :https://stackoverflow.com/a/32166735/10172299</p><h2>iOS 的 CryptoKit</h2><pre><code><span class="keyword">import</span> CryptoKit
 
 <span class="keyword">var</span> md5 = <span class="type">Insecure</span>.<span class="type">MD5</span>()
 
