@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Sat, 29 Feb 2020 10:31:18 +0000</lastBuildDate><pubDate>Sat, 29 Feb 2020 10:31:18 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/02/29/oop-discussion</guid><title>有物件導向的世界與沒有物件導向的世界</title><description>介紹物件導向在我的理解。</description><link>https://ytyubox.github.io/posts/2020/02/29/oop-discussion</link><pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>物件導向程式設計對於新手是非常困難的事情，今天我們有許多程式語言是以物件導向來運作的，像是 C++, Objective-C, Python, Swift，作為 iOS 開發者，很少看到以 Swift 為語言的物件導向教學，今天我將以 <a href="https://youtu.be/-DP1i2ZU9gk">Mit 6001 第 8 集: Object Oriented Progamming</a> 作為基礎，以 Swift 的方式分享物件導向。</p><h2>什麼是 Objects？</h2><p>Object 是一種資料的抽象，這種抽象是包含了兩個事情：它的內部零件和它的運作指令。車子是一個 Object，這個 Object 內有許多零件，像是輪胎、座椅、動力系統。每個零件都可以再視為另一個 Object，像是輪胎可以是橡皮部分、輪圈、輪圈上的螺絲釘。而車子的運作指令就是轉動方向盤、油門剎車。我們可以說，零件是物件的 property，指令是物件的 interface。 <img src="https://i.imgur.com/DU9wsuG.png"/></p><p>所以我們可以用 Swift 的 class 來說明汽車這個 Object：</p><pre><code><span class="keyword">class</span> 車子 {
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Sat, 29 Feb 2020 10:36:16 +0000</lastBuildDate><pubDate>Sat, 29 Feb 2020 10:36:16 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/02/29/oop-discussion</guid><title>有物件導向的世界與沒有物件導向的世界</title><description>介紹物件導向在我的理解。</description><link>https://ytyubox.github.io/posts/2020/02/29/oop-discussion</link><pubDate>Sat, 29 Feb 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<p>物件導向程式設計對於新手是非常困難的事情，今天我們有許多程式語言是以物件導向來運作的，像是 C++, Objective-C, Python, Swift，作為 iOS 開發者，很少看到以 Swift 為語言的物件導向教學，今天我將以 <a href="https://youtu.be/-DP1i2ZU9gk">Mit 6001 第 8 集: Object Oriented Progamming</a> 作為基礎，以 Swift 的方式分享物件導向。</p><h2>什麼是 Objects？</h2><p>Object 是一種資料的抽象，這種抽象是包含了兩個事情：它的內部零件和它的運作指令。車子是一個 Object，這個 Object 內有許多零件，像是輪胎、座椅、動力系統。每個零件都可以再視為另一個 Object，像是輪胎可以是橡皮部分、輪圈、輪圈上的螺絲釘。而車子的運作指令就是轉動方向盤、油門剎車。我們可以說，零件是物件的 property，指令是物件的 interface。 <img src="https://i.imgur.com/DU9wsuG.png"/></p><p>所以我們可以用 Swift 的 class 來說明汽車這個 Object：</p><pre><code><span class="keyword">class</span> 車子 {
     <span class="keyword">var</span> 動力系統： 動力系統種類
     
     <span class="keyword">func</span> 前進() {...}
@@ -47,31 +47,57 @@
 <span class="keyword">let</span> 農場 = <span class="call">場景</span>(name: <span class="string">"快樂農場"</span>)
 <span class="keyword">let</span> 城堡 = <span class="call">場景</span>(name: <span class="string">"魔王城堡"</span>)
 <span class="keyword">let</span> 平原 = <span class="call">場景</span>(name: <span class="string">"普通平原"</span>)
-</code></pre><ol start="3"><li>故事： 農場裡的 Yu 離開農場，經過平原到了城堡，將魔王趕出城堡。 <code></code>`swift /<em> 背景設定 </em>/ 農場.peopleComing(YuTheHero) 城堡.peopleComing(SwiftTheBoss) /<em> 劇情發展 </em>/</li></ol><p>農場.peopleLeaving(YuTheHero) 平原.peopleComing(YuTheHero) 平原.peopleLeaving(YuTheHero) 城堡.peopleComing(YuTheHero) 城堡.peopleLeaving(SwiftTheBoss)</p><pre><code>
+</code></pre><ol start="3"><li>故事： 農場裡的 Yu 離開農場，經過平原到了城堡，將魔王趕出城堡。</li></ol><pre><code><span class="comment">/* 背景設定 */</span>
+農場.<span class="call">peopleComing</span>(<span class="type">YuTheHero</span>)
+城堡.<span class="call">peopleComing</span>(<span class="type">SwiftTheBoss</span>)
+<span class="comment">/* 劇情發展 */</span>
 
-在這個例子中，我們將角色與場景抽象成為 <span class="type">Type</span>，建立了 角色要有 name、weapon，場景要有 name 與 characterAtHere，這樣的設計讓我們可以產生 <span class="type">Yu</span> 與 <span class="type">Swift</span> 這兩個不同的角色，這些角色可以存在於不同的場景。你可能會覺得可以有不同的抽象方式，像是人物可以有Enter, leave 的 function，而不是場景；對於這個設計疑問是一件難以說明的事情，<span class="call">因為隨著需求</span>(劇情)的演進，常常會有設計不適用的情形發生，所以在設計物件導向的時候需要經過仔細的思考與規劃。
-
-## 開放部分與不開放部分 (<span class="type">Public</span>/<span class="type">Private</span>)
-
-<span class="type">OOP</span> 中有所謂的可視區分，我稱之 “開放部分與不開放部分”。<span class="call">開放</span>(<span class="type">Public</span>) 就是 <span class="type">Interface</span>，<span class="call">不開放</span>(<span class="type">Public</span>)就是 <span class="type">SOP</span>，最為有效的比喻就是機關的櫃檯：
-在咖啡店的例子中，我們向咖啡店買一杯咖啡，咖啡店經過內部的一些標準製作流程，其中包含磨咖啡豆、煮水、泡咖啡、包裝咖啡，最後咖啡店將咖啡交給我們。在客人眼中，客人面對的是一間咖啡店，咖啡店接受的指令只有買咖啡。而在咖啡店內部的視角，咖啡店有咖啡原料、機器等 property，有一些指令像是磨咖啡豆、煮水、泡咖啡、包裝咖啡等等獨立的指令，這些指令不會讓客人逐一呼叫，咖啡店將這些指令設為 `private`，相對的透過 `public` 提供一個 “買咖啡” 的使得客人可以取得一份咖啡。
-
-</code></pre><p>Swift class 咖啡店 { // MARK: - Private scope private func 磨咖啡豆() -&gt; 咖啡粉 {...} private func 煮水() -&gt; 水 {...} private func 泡咖啡(咖啡粉,水) {...} private func 包裝咖啡(咖啡) {...} } // MARK: - Public scope extension 咖啡店 { public func 買咖啡() -&gt; 咖啡產品 { let 咖啡粉 = 磨咖啡豆() let 水 = 煮水() let 泡好的咖啡 = 泡咖啡(咖啡粉,水) let 包裝好的咖啡 = 包裝咖啡(泡好的咖啡) return 包裝好的咖啡 } }</p><pre><code>
-
-在這裡，我們可以說： 咖啡店將做一份咖啡這個商業機密**封裝**起來。
-
-
-## 結論： 學會了抽象與封裝之後
-
-<span class="type">OOP</span> 有 <span class="number">4</span> 大特性： 抽象、封裝、繼承、多型，我們學會了如何提取重複的抽象特性，學會了如何將步驟保護起來的封裝特性，接下來，你可以繼續學習 <span class="type">DRY</span> 的技巧，繼承與多型。<span class="type">DRY</span> 是 <span class="type">Don</span>'t <span class="type">Repeat Youself</span> 的縮寫，我們已經知道可以用迴圈來做到重複的程式碼消除。
-
-</code></pre><p>swift func 罰寫7次() { print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") }</p><pre><code>
-
-如今，你學會了物件導向，你也不應該做這樣的事情：
-</code></pre><p>swift class 小學生 { func 罰寫n次(n: Int) { for <em> in 0..&lt;n { print("我不應該重複我的程式碼") } } } class 大學生 { func 罰寫n次(n: Int) { for </em> in 0..&lt;n { print("我不應該重複我的程式碼") } } }</p><pre><code>
-
-而繼承與多型可以有效的處理這個 <span class="type">DRY</span> 的
-</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/SwiftCLI-helloworld</guid><title>使用 Swift Package Manager 建立 Command line tool</title><description>如何使用 Swift Package Manager(SPM) 與 Linux/Unix 互動</description><link>https://ytyubox.github.io/posts/SwiftCLI-helloworld</link><pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>使用 Swift Package Manager 建立 Command line tool</h1><p>Command line tool 有時候可以方便的處理一些常見的任務，有時候可以將開放中遇到的瑣碎事情自動化處理，例如 <a href="https://github.com/yonaskolb/XcodeGen">XcodeGen</a>就是一個有趣的應用。這篇文章將教你如何使用 Swift Package Manager(SPM) 與 Linux/Unix 互動。</p><h2>先備知識</h2><ol><li>基礎 Swift 語法知識，若以 Swift.org 的Language guide 目錄為標準，則是 <code>The Basic</code> 至 <code>Methods</code>。</li><li>基礎 Swift <code>Package.init</code> 參數使用，如 <code>name</code>, <code>dependencies</code>, <code>targets</code>。</li><li>基礎 Linux 語法知識，如 <code>ls -alR</code>, <code>Date</code>, <code>whoami</code>。</li></ol><h2>建立可執行的SPM - Hello world</h2><p>我們可以使用 Swift package manager 來建立一個新的 Package project。 如果你對 terminal 熟悉的話，可以閱讀更詳細的文件： <a href="https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md">Swift-package-manager/Usage.md</a>。</p><pre><code>$ swift package <span class="keyword">init</span> --type executable --name helloworld
+農場.<span class="call">peopleLeaving</span>(<span class="type">YuTheHero</span>)
+平原.<span class="call">peopleComing</span>(<span class="type">YuTheHero</span>)
+平原.<span class="call">peopleLeaving</span>(<span class="type">YuTheHero</span>)
+城堡.<span class="call">peopleComing</span>(<span class="type">YuTheHero</span>)
+城堡.<span class="call">peopleLeaving</span>(<span class="type">SwiftTheBoss</span>)
+</code></pre><p>在這個例子中，我們將角色與場景抽象成為 Type，建立了 角色要有 name、weapon，場景要有 name 與 characterAtHere，這樣的設計讓我們可以產生 Yu 與 Swift 這兩個不同的角色，這些角色可以存在於不同的場景。你可能會覺得可以有不同的抽象方式，像是人物可以有Enter, leave 的 function，而不是場景；對於這個設計疑問是一件難以說明的事情，因為隨著需求(劇情)的演進，常常會有設計不適用的情形發生，所以在設計物件導向的時候需要經過仔細的思考與規劃。</p><h2>開放部分與不開放部分 (Public/Private)</h2><p>OOP 中有所謂的可視區分，我稱之 “開放部分與不開放部分”。開放(Public) 就是 Interface，不開放(Public)就是 SOP，最為有效的比喻就是機關的櫃檯： 在咖啡店的例子中，我們向咖啡店買一杯咖啡，咖啡店經過內部的一些標準製作流程，其中包含磨咖啡豆、煮水、泡咖啡、包裝咖啡，最後咖啡店將咖啡交給我們。在客人眼中，客人面對的是一間咖啡店，咖啡店接受的指令只有買咖啡。而在咖啡店內部的視角，咖啡店有咖啡原料、機器等 property，有一些指令像是磨咖啡豆、煮水、泡咖啡、包裝咖啡等等獨立的指令，這些指令不會讓客人逐一呼叫，咖啡店將這些指令設為 <code>private</code>，相對的透過 <code>public</code> 提供一個 “買咖啡” 的使得客人可以取得一份咖啡。</p><pre><code><span class="keyword">class</span> 咖啡店 {
+    <span class="comment">// MARK: - Private scope</span>
+    <span class="keyword">private func</span> 磨咖啡豆() -&gt; 咖啡粉 {...}
+    <span class="keyword">private func</span> 煮水() -&gt; 水 {...}
+    <span class="keyword">private func</span> 泡咖啡(咖啡粉,水) {...}
+    <span class="keyword">private func</span> 包裝咖啡(咖啡) {...}
+}
+<span class="comment">// MARK: - Public scope</span>
+<span class="keyword">extension</span> 咖啡店 {
+  <span class="keyword">public func</span> 買咖啡() -&gt; <span class="call">咖啡產品</span> {
+      <span class="keyword">let</span> 咖啡粉 = <span class="call">磨咖啡豆</span>()
+      <span class="keyword">let</span> 水 = <span class="call">煮水</span>() 
+      <span class="keyword">let</span> 泡好的咖啡 = <span class="call">泡咖啡</span>(咖啡粉,水)
+      <span class="keyword">let</span> 包裝好的咖啡 = <span class="call">包裝咖啡</span>(泡好的咖啡)
+      <span class="keyword">return</span> 包裝好的咖啡
+  }
+}
+</code></pre><p>在這裡，我們可以說： 咖啡店將做一份咖啡這個商業機密<strong>封裝</strong>起來。</p><h2>結論： 學會了抽象與封裝之後</h2><p>OOP 有 4 大特性： 抽象、封裝、繼承、多型，我們學會了如何提取重複的抽象特性，學會了如何將步驟保護起來的封裝特性，接下來，你可以繼續學習 DRY 的技巧，繼承與多型。DRY 是 Don't Repeat Youself 的縮寫，我們已經知道可以用迴圈來做到重複的程式碼消除。</p><pre><code><span class="keyword">func</span> 罰寫7次() {
+  <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+  <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+  <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+  <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+  <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+  <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+  <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+}
+</code></pre><p>如今，你學會了物件導向，你也不應該做這樣的事情：</p><pre><code><span class="keyword">class</span> 小學生 {
+    <span class="keyword">func</span> 罰寫n次(n: <span class="type">Int</span>) {
+        <span class="keyword">for _ in</span> <span class="number">0</span>..&lt;n {
+          <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+        }
+    }
+}
+<span class="keyword">class</span> 大學生 {
+    <span class="keyword">func</span> 罰寫n次(n: <span class="type">Int</span>) {
+        <span class="keyword">for _ in</span> <span class="number">0</span>..&lt;n {
+          <span class="call">print</span>(<span class="string">"我不應該重複我的程式碼"</span>)
+        }
+    }
+}
+</code></pre><p>而繼承與多型可以有效的處理這個 DRY 的問題！</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/SwiftCLI-helloworld</guid><title>使用 Swift Package Manager 建立 Command line tool</title><description>如何使用 Swift Package Manager(SPM) 與 Linux/Unix 互動</description><link>https://ytyubox.github.io/posts/SwiftCLI-helloworld</link><pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>使用 Swift Package Manager 建立 Command line tool</h1><p>Command line tool 有時候可以方便的處理一些常見的任務，有時候可以將開放中遇到的瑣碎事情自動化處理，例如 <a href="https://github.com/yonaskolb/XcodeGen">XcodeGen</a>就是一個有趣的應用。這篇文章將教你如何使用 Swift Package Manager(SPM) 與 Linux/Unix 互動。</p><h2>先備知識</h2><ol><li>基礎 Swift 語法知識，若以 Swift.org 的Language guide 目錄為標準，則是 <code>The Basic</code> 至 <code>Methods</code>。</li><li>基礎 Swift <code>Package.init</code> 參數使用，如 <code>name</code>, <code>dependencies</code>, <code>targets</code>。</li><li>基礎 Linux 語法知識，如 <code>ls -alR</code>, <code>Date</code>, <code>whoami</code>。</li></ol><h2>建立可執行的SPM - Hello world</h2><p>我們可以使用 Swift package manager 來建立一個新的 Package project。 如果你對 terminal 熟悉的話，可以閱讀更詳細的文件： <a href="https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md">Swift-package-manager/Usage.md</a>。</p><pre><code>$ swift package <span class="keyword">init</span> --type executable --name helloworld
 </code></pre><p>這段指令執行了一下事情： 在當前目錄建立一個名為 <code>helloworld</code> 的 可執行的Swift package。</p><p>你可以看到當前目錄建立了一些檔案，下面是使用 <a href="https://formulae.brew.sh/formula/tree"><code>tree</code></a> 的檔案夾結構：</p><pre><code>.
 ├── <span class="type">Package</span>.<span class="property">swift</span>
 ├── <span class="type">README</span>.<span class="property">md</span>
