@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"/><meta name="og:site_name" content="游諭 Swift Dev 🦄"/><link rel="canonical" href="https://ytyubox.github.io/posts/2020/02/29/oop-discussion"/><meta name="twitter:url" content="https://ytyubox.github.io/posts/2020/02/29/oop-discussion"/><meta name="og:url" content="https://ytyubox.github.io/posts/2020/02/29/oop-discussion"/><meta name="google-site-verification" content="laa-5denPCh-d7LKKq_HLxpcMTXZa1R2OSU8L19KmM0"/><title>有物件導向的世界與沒有物件導向的世界 | 游諭 Swift Dev 🦄</title><meta name="twitter:title" content="有物件導向的世界與沒有物件導向的世界 | 游諭 Swift Dev 🦄"/><meta name="og:title" content="有物件導向的世界與沒有物件導向的世界 | 游諭 Swift Dev 🦄"/><meta name="description" content="介紹物件導向在我的理解。"/><meta name="twitter:description" content="介紹物件導向在我的理解。"/><meta name="og:description" content="介紹物件導向在我的理解。"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to 游諭 Swift Dev 🦄"/><meta name="twitter:image" content="https://ytyubox.github.io/images/logo.png"/><meta name="og:image" content="https://ytyubox.github.io/images/logo.png"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">游諭 Swift Dev 🦄</a><div><script async src="https://www.googletagmanager.com/gtag/js?id=UA-155763530-1"></script><script>				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', 'UA-155763530-1');</script></div><nav><ul><li><a class="selected" href="/posts">posts</a></li><li><a href="/about">About</a></li></ul></nav></div></header><div class="fb-root"><script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v5.0&appId=1443810799117142&autoLogAppEvents=1"></script></div><div class="wrapper"><article><div class="content"><p>物件導向程式設計對於新手是非常困難的事情，今天我們有許多程式語言是以物件導向來運作的，像是 C++, Objective-C, Python, Swift，作為 iOS 開發者，很少看到以 Swift 為語言的物件導向教學，今天我將以 <a href="https://youtu.be/-DP1i2ZU9gk">Mit 6001 第 8 集: Object Oriented Progamming</a> 作為基礎，以 Swift 的方式分享物件導向。</p><h2>什麼是 Objects？</h2><p>Object 是一種資料的抽象，這種抽象是包含了兩個事情：它的內部零件和它的運作指令。車子是一個 Object，這個 Object 內有許多零件，像是輪胎、座椅、動力系統。每個零件都可以再視為另一個 Object，像是輪胎可以是橡皮部分、輪圈、輪圈上的螺絲釘。而車子的運作指令就是轉動方向盤、油門剎車。我們可以說，零件是物件的 property，指令是物件的 interface。 <img src="https://i.imgur.com/DU9wsuG.png"/></p><p>所以我們可以用 Swift 的 class 來說明汽車這個 Object：</p><pre><code><span class="keyword">class</span> 車子 {
+    <span class="keyword">var</span> 動力系統： 動力系統種類
+    
+    <span class="keyword">func</span> 前進() {...}
+    <span class="keyword">func</span> 後退() {...}
+    <span class="keyword">func</span> 左轉() {...}
+    <span class="keyword">func</span> 右轉() {...}
+}
+
+<span class="keyword">let</span> miniCooper = <span class="call">車子</span>(動力系統: .<span class="dotAccess">渦輪增壓直列4缸</span>)
+<span class="keyword">let</span> 動物園馬車 = <span class="call">車子</span>(動力系統: .<span class="call">成年馬</span>(<span class="number">2</span>))
+</code></pre><p>這時候我們有了 2 個型別為車子的 Object，分別是 miniCooper 和 動物園馬車。</p><h2>OBJECT ORIENTED PROGRAMMING (OOP) 的特性</h2><p>OOP 可以將一連串的資訊與 function 約束在一起，就像是商店裡的大包裝一樣沒有辦法分別購買裡面的資訊。如果沒有這個功能，我們可能會這樣寫：</p><pre><code><span class="keyword">let</span> miniCooper = <span class="call">車子</span>()
+<span class="keyword">let</span> miniCooper動力系統 = 渦輪增壓直列4缸
+<span class="keyword">let</span> 馬車 = <span class="call">車子</span>()
+<span class="keyword">let</span> 馬車動力系統 = 成年馬2匹
+
+<span class="keyword">func</span> miniCooper前進() {...}
+<span class="keyword">func</span> 馬車前進() {...}
+<span class="keyword">func</span> miniCooper後退() {...}
+<span class="keyword">func</span> 馬車後退() {...}
+<span class="keyword">func</span> miniCooper左轉() {...}
+<span class="keyword">func</span> 馬車左轉() {...}
+<span class="keyword">func</span> miniCooper右轉() {...}
+<span class="keyword">func</span> 馬車右轉() {...}
+</code></pre><p>相較於 OOP 的寫法，是不是多出了許多呢！為什麼會有這麼大的差異，最明顯的就是 OOP 可以使程式碼有很大程度的重複使用。當我想到重複使用，我想到環保餐具，我們使用免洗筷雖然可以有一時的方便，但是隨著用的次數變多，我們漸漸受到濫用的懲罰；程式碼也是一樣的道理，一旦我們濫用了複製貼上，隨著程式碼的複雜會逐漸出現可大可小的懲罰。</p><h2>學好 OOP 的重要心法：抽象</h2><p>設計 OOP 是一門藝術，就像是寫劇本一樣，你會知道在劇情發展下什麼是重要的，什麼是不重要的；而在物件導向裡面，可以用一些台詞來解釋物件之間的複雜關係。例如： 1. 人物設定：主角 Yu 有一把寶劍，大魔王 Swift 有一支斧頭</p><pre><code><span class="keyword">class</span> 角色 {
+    <span class="keyword">let</span> name: <span class="type">String</span>
+    <span class="keyword">let</span>  weapon: <span class="type">Weapon</span>
+    <span class="keyword">enum</span> Weapon {
+        <span class="keyword">case</span> 寶劍
+        <span class="keyword">case</span> 斧頭
+    }
+}
+
+<span class="keyword">let</span> <span class="type">YuTheHero</span> = <span class="call">角色</span>(name: <span class="string">"Yu"</span>,  weapon: .<span class="dotAccess">寶劍</span>)
+<span class="keyword">let</span> <span class="type">SwiftTheBoss</span> = <span class="call">角色</span>(name: <span class="string">"Swift"</span>,  weapon: .<span class="dotAccess">斧頭</span>)
+</code></pre><ol start="2"><li>場景設定： 一個農場、一棟城堡、一片平原</li></ol><pre><code><span class="keyword">class</span> 場景 {
+    <span class="keyword">let</span> name:<span class="type">String</span>
+    <span class="keyword">var</span> characterAtHere:[角色] = []
+    <span class="keyword">func</span> peopleComing(<span class="keyword">_</span> people:角色) {
+    ...
+    }
+    <span class="keyword">func</span> peopleLeaving(<span class="keyword">_</span> people:角色) {
+    ...
+    }
+}
+
+<span class="keyword">let</span> 農場 = <span class="call">場景</span>(name: <span class="string">"快樂農場"</span>)
+<span class="keyword">let</span> 城堡 = <span class="call">場景</span>(name: <span class="string">"魔王城堡"</span>)
+<span class="keyword">let</span> 平原 = <span class="call">場景</span>(name: <span class="string">"普通平原"</span>)
+</code></pre><ol start="3"><li>故事： 農場裡的 Yu 離開農場，經過平原到了城堡，將魔王趕出城堡。 <code></code>`swift /<em> 背景設定 </em>/ 農場.peopleComing(YuTheHero) 城堡.peopleComing(SwiftTheBoss) /<em> 劇情發展 </em>/</li></ol><p>農場.peopleLeaving(YuTheHero) 平原.peopleComing(YuTheHero) 平原.peopleLeaving(YuTheHero) 城堡.peopleComing(YuTheHero) 城堡.peopleLeaving(SwiftTheBoss)</p><pre><code>
+
+在這個例子中，我們將角色與場景抽象成為 <span class="type">Type</span>，建立了 角色要有 name、weapon，場景要有 name 與 characterAtHere，這樣的設計讓我們可以產生 <span class="type">Yu</span> 與 <span class="type">Swift</span> 這兩個不同的角色，這些角色可以存在於不同的場景。你可能會覺得可以有不同的抽象方式，像是人物可以有Enter, leave 的 function，而不是場景；對於這個設計疑問是一件難以說明的事情，<span class="call">因為隨著需求</span>(劇情)的演進，常常會有設計不適用的情形發生，所以在設計物件導向的時候需要經過仔細的思考與規劃。
+
+## 開放部分與不開放部分 (<span class="type">Public</span>/<span class="type">Private</span>)
+
+<span class="type">OOP</span> 中有所謂的可視區分，我稱之 “開放部分與不開放部分”。<span class="call">開放</span>(<span class="type">Public</span>) 就是 <span class="type">Interface</span>，<span class="call">不開放</span>(<span class="type">Public</span>)就是 <span class="type">SOP</span>，最為有效的比喻就是機關的櫃檯：
+在咖啡店的例子中，我們向咖啡店買一杯咖啡，咖啡店經過內部的一些標準製作流程，其中包含磨咖啡豆、煮水、泡咖啡、包裝咖啡，最後咖啡店將咖啡交給我們。在客人眼中，客人面對的是一間咖啡店，咖啡店接受的指令只有買咖啡。而在咖啡店內部的視角，咖啡店有咖啡原料、機器等 property，有一些指令像是磨咖啡豆、煮水、泡咖啡、包裝咖啡等等獨立的指令，這些指令不會讓客人逐一呼叫，咖啡店將這些指令設為 `private`，相對的透過 `public` 提供一個 “買咖啡” 的使得客人可以取得一份咖啡。
+
+</code></pre><p>Swift class 咖啡店 { // MARK: - Private scope private func 磨咖啡豆() -&gt; 咖啡粉 {...} private func 煮水() -&gt; 水 {...} private func 泡咖啡(咖啡粉,水) {...} private func 包裝咖啡(咖啡) {...} } // MARK: - Public scope extension 咖啡店 { public func 買咖啡() -&gt; 咖啡產品 { let 咖啡粉 = 磨咖啡豆() let 水 = 煮水() let 泡好的咖啡 = 泡咖啡(咖啡粉,水) let 包裝好的咖啡 = 包裝咖啡(泡好的咖啡) return 包裝好的咖啡 } }</p><pre><code>
+
+在這裡，我們可以說： 咖啡店將做一份咖啡這個商業機密**封裝**起來。
+
+
+## 結論： 學會了抽象與封裝之後
+
+<span class="type">OOP</span> 有 <span class="number">4</span> 大特性： 抽象、封裝、繼承、多型，我們學會了如何提取重複的抽象特性，學會了如何將步驟保護起來的封裝特性，接下來，你可以繼續學習 <span class="type">DRY</span> 的技巧，繼承與多型。<span class="type">DRY</span> 是 <span class="type">Don</span>'t <span class="type">Repeat Youself</span> 的縮寫，我們已經知道可以用迴圈來做到重複的程式碼消除。
+
+</code></pre><p>swift func 罰寫7次() { print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") print("我不應該重複我的程式碼") }</p><pre><code>
+
+如今，你學會了物件導向，你也不應該做這樣的事情：
+</code></pre><p>swift class 小學生 { func 罰寫n次(n: Int) { for <em> in 0..&lt;n { print("我不應該重複我的程式碼") } } } class 大學生 { func 罰寫n次(n: Int) { for </em> in 0..&lt;n { print("我不應該重複我的程式碼") } } }</p><pre><code>
+
+而繼承與多型可以有效的處理這個 <span class="type">DRY</span> 的
+</code></pre></div><span>Tagged with: </span><ul class="tag-list"><li class="variant-o"><a href="/tags/oop">oop</a></li><li class="variant-i"><a href="/tags/intro">intro</a></li></ul></article></div><div class="fb-comments" colorscheme="dark" data-width="10" data-herf="https://ytyubox.github.io/posts/2020/02/29/oop-discussion" data-numposts="10"></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift</p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>
