@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="UTF-8"/><meta name="og:site_name" content="游諭 Swift Dev 🦄"/><link rel="canonical" href="https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift"/><meta name="twitter:url" content="https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift"/><meta name="og:url" content="https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift"/><meta name="google-site-verification" content="laa-5denPCh-d7LKKq_HLxpcMTXZa1R2OSU8L19KmM0"/><title>運用泛型實現 Fluent interface Setter | 游諭 Swift Dev 🦄</title><meta name="twitter:title" content="運用泛型實現 Fluent interface Setter | 游諭 Swift Dev 🦄"/><meta name="og:title" content="運用泛型實現 Fluent interface Setter | 游諭 Swift Dev 🦄"/><meta name="description" content="介紹 Fluent interface 及在 Swift 的實作"/><meta name="twitter:description" content="介紹 Fluent interface 及在 Swift 的實作"/><meta name="og:description" content="介紹 Fluent interface 及在 Swift 的實作"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to 游諭 Swift Dev 🦄"/><meta name="twitter:image" content="https://ytyubox.github.io/images/logo.png"/><meta name="og:image" content="https://ytyubox.github.io/images/logo.png"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">游諭 Swift Dev 🦄</a><div><script async src="https://www.googletagmanager.com/gtag/js?id=UA-155763530-1"></script><script>				window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', 'UA-155763530-1');</script></div><nav><ul><li><a class="selected" href="/posts">posts</a></li><li><a href="/about">About</a></li></ul></nav></div></header><div class="fb-root"><script async defer crossorigin="anonymous" src="https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v5.0&appId=1443810799117142&autoLogAppEvents=1"></script></div><div class="wrapper"><article><div class="content"><img src="https://i.imgur.com/YOSTX3P.png"/><h1>運用泛型實現 Fluent interface Setter</h1><p>Fluent Interface(FI)，又名流式接口，是一種在程式編寫的方式，這篇文章將描述 FI 的意義與如何在 Swift 5.1 實作。</p><h2>什麼是 Fluent interface</h2><p>流式接口可以將指令式語言轉化成宣告式語言，使簡易的邏輯判斷消失，進而加強程式碼的可讀性。在 FI 中有許多應用，我分成了 3 種類型 <code>Transformer</code>, <code>Getter</code>, <code>Setter</code>。</p><h3>Transformer</h3><p>我們在操作集合類型的時候，常常使用 filter、map、reduce，像是：</p><pre><code><span class="keyword">let</span> input = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+<span class="keyword">let</span> output = input.<span class="call">map</span>(<span class="type">String</span>.<span class="property">init</span>)
+</code></pre><p>相比沒有使用 <code>map</code> 函式，我們可以使用 for in 迴圈來處理：</p><pre><code><span class="keyword">let</span> input = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+<span class="keyword">var</span> output = [<span class="type">String</span>]()
+<span class="keyword">for</span> value <span class="keyword">in</span> input {
+    output.<span class="call">append</span>(<span class="type">String</span>(value))
+}
+</code></pre><p>在 map 函式中，可以看到原先的 input 是一個 <code>let</code> 的變數，明顯可以看到 output 的生成不會改變來源的數值，因此他是一種 <code>Transform</code> 的功能。</p><h3>Getter</h3><p>在一些常見的程式語言中常有空的概念(Null)，尤其在 Swift 中更是個不能忽略的事情。當我們要使用一個巢狀型別如下：</p><pre><code><span class="keyword">struct</span> Person {
+    <span class="keyword">var</span> name:<span class="type">String</span>
+    <span class="keyword">var</span> pet:<span class="type">Pet</span>?
+    <span class="keyword">struct</span> Pet {
+        <span class="keyword">var</span> petName:<span class="type">String</span>
+        <span class="keyword">var</span> speakSound: <span class="type">String</span>?
+    }
+}
+</code></pre><p>我們有一個 Person 型別，這個 Person 有必須的 name 屬性，和一個非必須的 pet 屬性(Pet型別)，而這個 Pet 有必須的 petName，和一個非必須的 speakSound。假如我們需要取得所有 person 的 pet 的speakSound，為了避免空的問題，我們可以用 if else 來處理：</p><pre><code><span class="comment">// [進階]：為了避免誤解，我省略了 Implicitly Unwrapped Optional</span>
+
+<span class="keyword">let</span> theMan = <span class="type">Person</span>(name: <span class="string">"Yu"</span>, 
+                    pet: <span class="type">Pet</span>(petName: <span class="string">"dog"</span>, speakSound: <span class="string">"bark"</span>))
+                    
+<span class="keyword">if</span> theMan.<span class="property">pet</span> != <span class="keyword">nil</span> {
+    <span class="keyword">if</span> theMan.<span class="property">pet</span>.<span class="property">speakSound</span> != {
+        <span class="call">print</span>(theMan.<span class="property">pet</span>.<span class="property">speakSound</span>) <span class="comment">// bark</span>
+    }
+}
+</code></pre><p>而在 Swift 中，我們可以使用 Optional chaining 來將這個判斷封裝起來：</p><pre><code><span class="keyword">let</span> theWoman = <span class="type">Person</span>(name: <span class="string">"Swift"</span>, 
+                      pet: tir)
+<span class="call">print</span>(theWoman.<span class="property">pet</span>?.<span class="property">speakSound</span> ?? <span class="string">"..."</span>) <span class="comment">// ...</span>
+</code></pre><p>在這個例子，我們看到使用 Optional chaining 可以大幅簡化程式碼的複雜情況，讓取得物件 property 的程式可以不需要明顯的邏輯判斷，而是將判斷封裝至 <code>?</code> 這個運算符號。</p><h3>Setter</h3><p>在物件導向設計模式中，有一個 Builder 模式(生成器模式)，它可以將複雜對象的建造過程抽象出來（抽象類別），使這個抽象過程的不同實現方法可以構造出不同表現（屬性）的對象。 <img src="https://i.imgur.com/TvKtVxO.png"/> 圖片來自 https://en.wikipedia.org/wiki/Builder_pattern</p><p>在 Swift Foundation 中，<a href="https://developer.apple.com/documentation/foundation/datecomponents">DateComponents</a> 是一個常見的 Builder：</p><pre><code><span class="keyword">var</span> dateComponents = <span class="type">DateComponents</span>()
+dateComponents.<span class="property">calendar</span> = .<span class="dotAccess">current</span>
+dateComponents.<span class="property">year</span> = <span class="number">2020</span>
+dateComponents.<span class="property">month</span> = <span class="number">3</span>
+dateComponents.<span class="property">day</span> = <span class="number">14</span>
+dateComponents.<span class="property">hour</span> = <span class="number">1</span>
+dateComponents.<span class="property">minute</span> = <span class="number">20</span>
+dateComponents.<span class="property">second</span> = <span class="number">59</span>
+dateComponents.<span class="property">date</span> <span class="comment">// 2020-03-13 17:20:59 +0000</span>
+</code></pre><p>而在我的 <a href="https://github.com/ytyubox/fluentinterface">FluentInterface</a> 這個 Swift Package 中，我們可以改變這個逐步賦值的方式：</p><pre><code><span class="keyword">let</span> dateComponents = <span class="type">DateComponents</span>()+
+                      .<span class="call">calendar</span>(.<span class="dotAccess">current</span>)
+                      .<span class="call">year</span>(<span class="number">2020</span>)
+                      .<span class="call">month</span>(<span class="number">3</span>)
+                      .<span class="call">day</span>(<span class="number">14</span>)
+                      .<span class="call">hour</span>(<span class="number">1</span>)
+                      .<span class="call">minute</span>(<span class="number">20</span>)
+                      .<span class="call">second</span>(<span class="number">59</span>)
+                      .<span class="call">unwrappingSubject</span>()
+                      .<span class="dotAccess">date</span>
+dateComponents.<span class="property">date</span> <span class="comment">// 2020-03-13 17:20:59 +0000</span>
+</code></pre><p>是不是相對的更直覺一些呢！</p><h2>FluentInterface 的不好地方</h2><img src="https://i.imgur.com/vEGbZlJ.png"/><p>在 2019 年 appcode.com.tw 的 https://www.appcoda.com.tw/fluent-interface/ 文章中，我受到不少啟發，特別分享這篇好文章。 2020 年 3 月時我在 CocoaHeads Taipei 分享了這個 repo，感謝其他與會的開發者提問有關於效能的問題，是的 FI 效率很不好，在連續 1<em>000</em>000 的 Object 生成並 賦予 60 個不同 property 相同數值時，若使用匿名函式(Anonymous Function)，單元測試顯示 10 次執行平均時間約為 <code>0.810 秒</code>； 而 FluentInterface 實測同樣條件需要 <code>15.796</code> 秒。因此在使用 FI 的時候，考慮效能在大數量的狀況是必須注意的。</p><img src="https://i.imgur.com/wbio12T.jpg"/><p>線上的 CocoaHeads Taipei 聚會</p><p>文末特別感謝許立恆、陳涵宇等等開發者。</p></div><span>Tagged with: </span><ul class="tag-list"><li class="variant-s"><a href="/tags/swift">swift</a></li><li class="variant-鼠"><a href="/tags/鼠年全馬挑戰賽">鼠年全馬挑戰賽</a></li></ul></article></div><div class="fb-comments" colorscheme="dark" data-width="10" data-herf="https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift" data-numposts="10"></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a>, 100% Swift</p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>
