@@ -1,4 +1,126 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Sun, 15 Mar 2020 06:58:10 +0000</lastBuildDate><pubDate>Sun, 15 Mar 2020 06:58:10 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift</guid><title>運用泛型實現 Fluent interface Setter</title><description>介紹 Fluent interface 及在 Swift 的實作</description><link>https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift</link><pubDate>Sat, 14 Mar 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<img src="https://i.imgur.com/YOSTX3P.png"/><h1>運用泛型實現 Fluent interface Setter</h1><p>Fluent Interface(FI)，又名流式接口，是一種在程式編寫的方式，這篇文章將描述 FI 的意義與如何在 Swift 5.1 實作。</p><h2>什麼是 Fluent interface</h2><p>流式接口可以將指令式語言轉化成宣告式語言，使簡易的邏輯判斷消失，進而加強程式碼的可讀性。在 FI 中有許多應用，我分成了 3 種類型 <code>Transformer</code>, <code>Getter</code>, <code>Setter</code>。</p><h3>Transformer</h3><p>我們在操作集合類型的時候，常常使用 filter、map、reduce，像是：</p><pre><code><span class="keyword">let</span> input = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>游諭 Swift Dev 🦄</title><description>iOS 開發者, 喜歡研究新事物, 生酮食用者</description><link>https://ytyubox.github.io/</link><language>zh</language><lastBuildDate>Sat, 21 Mar 2020 23:02:27 +0000</lastBuildDate><pubDate>Sat, 21 Mar 2020 23:02:27 +0000</pubDate><ttl>250</ttl><atom:link href="https://ytyubox.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Swift-oop-type-casting</guid><title>Swift 物件導向的型別解讀</title><description>解釋 Swift 型別是什麼，含轉型、型別抹除、還有Swift 5.1 的 some</description><link>https://ytyubox.github.io/posts/2020/Swift-oop-type-casting</link><pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<h1>Swift 物件導向的型別解讀</h1><p>在 Swift 中，原生型別有 Int、Double、String 等等，有時候我們會看到 <code>Int("1")</code>，有時候卻看到 <code>cell as! MyCell</code>，到底這哪裡不一樣，<code>as</code>, <code>as?/as!</code> 的差別在哪，這篇文章我將用我的解讀來說明一次。 &gt; 強調： 這篇不會提到 <code>Any</code>、<code>AnyObject</code>，但請記得這兩個是 Swift 的上帝型別。</p><h2>先備知識</h2><p>由於這是一個稍微進階的主題，你應該要先可以回答下面的問題，如果你對於問題不是很理解，或是想對對看答案，歡迎留言： 1. <code>init</code> 是一個 object function 還是 classstatic function? 2. 說明 <code>Int("5")</code> 是什麼意思 3. class A 與 class B 同時繼承於 class C，A 有的 function ，B 一定會有嗎？ C 有的 function， B 一定會有嗎？</p><h2>Swift 型別</h2><p>在 Swift 中，型別一直是一個很麻煩的事情，例如以下的Value type (V)：</p><pre><code><span class="keyword">let</span> float: <span class="type">Float</span> = <span class="number">1.0</span>
+<span class="keyword">let</span> cgFloat:<span class="type">CGFloat</span> = <span class="type">CGFloat</span>(float)
+</code></pre><p>或是 class 的 Referance type (R)：</p><pre><code><span class="keyword">extension</span> <span class="type">ViewController</span>: <span class="type">UIScrollViewDelegate</span> {
+	<span class="keyword">func</span> scrollViewDidScroll(<span class="keyword">_</span> scrollView: <span class="type">UIScrollView</span>) {
+		<span class="keyword">let</span> tableView = scrollView <span class="keyword">as</span>! <span class="type">UITableView</span> <span class="comment">//</span> 
+	}
+}
+</code></pre><p>在這裡我認為這兩個例子要不同解釋： 1. 不論是R/V type，任何透過 <code>init</code> 的行為稱為 “用其他物件產生一個指定物件” 2. <code>as</code> 稱為轉型，<code>繼承型別 as Super型別</code> 我稱呼為上轉型、<code>Super型別 as!/as? 繼承型別</code> 則為嘗試轉型！</p><h2>物件導向的繼承</h2><p>在 Swift 的物件導向中，我們可以發現 UIKit 中有許多 class 是繼承自同一個基礎類別，像是 UIButton、UITableView 都是繼承於 UIView，這裏為了讓不熟悉 UIKit 的朋友可以跟上，我們簡單回顧一下物件導向的繼承，如果你已經理解繼承的可以跳過。</p><p>請參考以下 UML 圖形，這是參考<a href="https://zh.wikipedia.org/wiki/%E7%94%9F%E7%89%A9%E5%88%86%E9%A1%9E%E6%B3%95">生物分類法</a>所生成的圖像，生物是最高等級的分類，旗下有兩個分支，分別代表植物界、動物界。</p><pre><code>       +---------+
+    <span class="keyword">class</span> 生物(真核域)
+      +---------+
+           ▲
+     +-----+-----+
+     |           |
++--------+  +--------+
+<span class="keyword">class</span> 植物   <span class="keyword">class</span> 動物
++--------+  +--------+
+</code></pre><p>而做為一位人類，我們與貓狗的距離是這樣的：</p><pre><code>                  +---------+
+                 <span class="keyword">class</span> 哺乳類
+                 +---------+
+                      ▲
+             +--------+----------+
+             |                   |
+        +--------+          +--------+
+        <span class="keyword">class</span> 食肉目         <span class="keyword">class</span> 靈長目  
+        +--------+          +--------+
+            ▲                  |
+   +--------+--------+         |
+   |                 |         |
++---------+  +---------+    +---------+
+ <span class="keyword">class</span> 貓科    <span class="keyword">class</span> 犬科     <span class="keyword">class</span> 人科 
++---------+  +---------+    +---------+
+</code></pre><p>因此我們可以寫出這個分類的 Swift code：</p><pre><code><span class="keyword">class</span> 生物 {}
+<span class="keyword">class</span> 植物: <span class="call">生物</span> {}
+<span class="keyword">class</span> 動物: <span class="call">生物</span> {}
+<span class="keyword">class</span> 哺乳類: <span class="call">動物</span> {}
+<span class="keyword">class</span> 食肉目: <span class="call">哺乳類</span> {}
+<span class="keyword">class</span> 靈長目: <span class="call">哺乳類</span> {}
+<span class="keyword">class</span> 貓科: <span class="call">食肉目</span> {}
+<span class="keyword">class</span> 犬科: <span class="call">食肉目</span> {}
+<span class="keyword">class</span> 人科: <span class="call">靈長目</span> {}
+</code></pre><p>如此一般，只要是動物一下的，不論是貓、狗、人，都是哺乳類，同時都具有動物該有的特性，因此我們可以說，動物是哺乳類的 <code>super</code>，貓、狗、人都是繼承於哺乳類。</p><h2>來說說 as 與 as!/as?</h2><p>在 Swift 用到 as 有兩種機會：繼承與別名(typealias)，為了不混淆視聽，typealias 的部分不會在這篇文章解釋。 在上面我們實作了一個繼承關係樹，我們現在要開始使用這個關係了。假如今天發現的一個 Z 病毒，他的作用範圍是人類，可以用以下的方式實作：</p><pre><code><span class="keyword">extension</span> 人科 {
+  <span class="keyword">func</span> 生病() { }
+}
+
+<span class="keyword">class</span> Z病毒 {
+  <span class="keyword">func</span> 把它弄生病(誰 那個人: 人科) {
+    那個人.<span class="call">生病</span>()
+  }
+}
+
+<span class="keyword">let</span> 游諭 = <span class="call">人科</span>()
+<span class="keyword">let</span> 我家養的貓 = <span class="call">貓科</span>()
+<span class="keyword">let</span> 很恐怖的Z病毒 = <span class="type">Z病毒</span>()
+很恐怖的Z病毒.<span class="call">把它弄生病</span>(誰: 游諭)
+很恐怖的Z病毒.<span class="call">把它弄生病</span>(誰: 我家養的貓) <span class="comment">// compile error</span>
+</code></pre><p>可以看到我們的 <code>Z 病毒</code> 可以感染 <code>人</code> 但不能感染 <code>貓</code>，原因是 <code>Z 病毒</code> 無法將不是人科的 Objcet 作為參考。 但是有一天，Z 病毒進化成可以感染貓科動物，或許你想到我們可以用 <code>as！</code> 的方式來處理：</p><pre><code><span class="keyword">let</span> 我家養的貓人 = 我家養的貓 <span class="keyword">as</span>! 人科 <span class="comment">// run-time error</span>
+virusZ.<span class="call">把它弄生病</span>(誰: 我家養的貓人)
+</code></pre><p>仔細想想，kitty 有可能是人嗎？ 很可惜並不會☹️。因此我們可以為 Z 病毒新增一個感染貓的 function：</p><pre><code><span class="keyword">extension</span> <span class="type">Z病毒</span> {
+  <span class="keyword">func</span> 把它弄生病(誰 那個貓: 貓科) {
+    那個貓.<span class="call">生病</span>()
+  }
+}
+</code></pre><p>但隨著時間演進，Z 病毒發生變化，只要是哺乳類都會感染，這要怎麼設計呢？或許你會在 Z 病毒為每一個哺乳類的繼承類別實作一個同名函式，但是有更好的方法，可以針對哺乳類實作：</p><pre><code><span class="keyword">extension</span> <span class="type">Z病毒</span> {
+  <span class="keyword">func</span> 把它弄生病(誰 那個哺乳類: 哺乳類) {
+    那個哺乳類.<span class="call">生病</span>()
+  }
+}
+
+<span class="keyword">let</span> 隔壁養的狗 = <span class="call">犬科</span>()
+<span class="keyword">let</span> 某個哺乳類: 哺乳類 = 隔壁養的狗 <span class="keyword">as</span> 哺乳類 
+很恐怖的Z病毒.<span class="call">把它弄生病</span>(誰: 某個哺乳類)
+</code></pre><p>Swift 作為你的好朋友，他知道犬科成為一個哺乳類是一定會成功的，所以我們可以不使用 <code>as!/as?</code> 來嘗試，而且這真的一定會成功，所以 Swift 可以直接忽略這麼一個事情！</p><pre><code>很恐怖的Z病毒.<span class="call">把它弄生病</span>(誰: 隔壁養的狗)
+</code></pre><blockquote><p>在此，我習慣將這個一個把繼承物件轉型成 Super 型別的動作稱為 <code>上轉型</code>，其背後的意義是 [[型別抹除-wiki]](https://en.wikipedia.org/wiki/Type_erasure) 的一種，把衍生類型轉成基本類型隱藏起來，通過基礎類別的多型呼叫虛擬函式隱藏類的實現。</p></blockquote><p>有一天科學家發現，Z病毒不會對鴨嘴獸感染，你要如何處理這個特例而且不需要取消 <code>那個哺乳類</code>，這時候你可以用型別推斷 <code>is</code> 來進行：</p><pre><code>+<span class="keyword">class</span> 鴨嘴獸: <span class="call">哺乳類</span> {
+  <span class="keyword">override func</span> 生病() {
+    <span class="call">fatalError</span>(<span class="string">"鴨嘴獸不會生病"</span>)
+  }
+  <span class="keyword">func</span> 遇到病毒(<span class="keyword">_</span> 病毒: <span class="type">Z病毒</span>) {  }
+}
+
+<span class="comment">// 修改上面的程式碼</span>
+<span class="keyword">extension</span> <span class="type">Z病毒</span> {
+  <span class="keyword">func</span> 把它弄生病(誰 那個哺乳類: 哺乳類) {
+    <span class="keyword">if</span> 那個哺乳類 <span class="keyword">is</span> 鴨嘴獸 {
+      <span class="keyword">let</span> 那個哺乳類是鴨嘴獸 = 那個哺乳類 <span class="keyword">as</span>! 鴨嘴獸
+      那個哺乳類是鴨嘴獸.<span class="call">遇到病毒</span>(<span class="keyword">self</span>)
+      <span class="keyword">return</span>
+    } 
+    那個哺乳類.<span class="call">生病</span>()
+  }
+}
+</code></pre><p>如此一來，我們只要對 Z 病毒的感染能力針對鴨嘴獸修改，就可以使程式運作正常。</p><blockquote><p>在此，我習慣把這種 <code>Super型別 is/as!/as? 繼承型別</code> 稱為嘗試轉型！</p></blockquote><h2>[進階] 你懂了之後，可以試試看 Swift 5.1 的 Opaque Return Types</h2><p>在講之前，你需要能回答以下的問題： 1. associatedtype 的可宣告範圍(層級)是哪裏？ 2. Any 與 AnyObject 是什麼？為什麼不能 <code>class SOME: AnyObject</code></p><p>由於 Swift 沒有抽象類別而用 protocol 來替換 interface，尤其是泛型(generic) 的 protocol，無法使用 <code>SOMEProtocol&lt;Int&gt;</code> 來寫，所以一直以來這部分有些雞肋。然而 Swift 5.1 有了 Opaque Return Types(ORT)，我們現在可以使下面的程式碼成立：</p><pre><code><span class="keyword">protocol</span> 某個有泛型的 {
+   <span class="keyword">associatedtype</span> 那個泛型
+}
+<span class="keyword">class</span> 泛型類別&lt;是個泛型&gt;: <span class="call">某個有泛型的</span> {
+  <span class="keyword">typealias</span> 那個泛型 = 是個泛型
+}
+
+<span class="keyword">func</span> 一個會回傳的函式() -&gt; <span class="keyword">some</span> 某個有泛型的 {
+    <span class="keyword">return</span> 泛型類別&lt;<span class="type">Int</span>&gt;()
+}
+
+<span class="keyword">let</span> 某個有泛型: <span class="keyword">some</span> 某個有泛型的 = <span class="call">一個會回傳的函式</span>()
+</code></pre><p>可以看到 ORT 可以做到將有 associatedtype 的 protocol 作為變數，但是目前有幾個地方是做不到的： 1. 將 some 變數放在集合中，如 Array 2. 可能回傳不同 Base class 的狀況</p><pre><code><span class="keyword">protocol</span> P { <span class="keyword">associatedtype</span> PP }
+
+<span class="keyword">class</span> G&lt;T&gt;:<span class="type">P</span> { <span class="keyword">typealias</span> PP = <span class="type">T</span> }
+<span class="keyword">class</span> H&lt;T&gt;:<span class="type">P</span> { <span class="keyword">typealias</span> PP = <span class="type">T</span> }
+
+<span class="keyword">func</span> s(b:<span class="type">Bool</span>) -&gt; <span class="keyword">some</span> <span class="type">P</span> {
+  b ? <span class="type">G</span>&lt;<span class="type">Int</span>&gt;() : <span class="type">H</span>&lt;<span class="type">Int</span>&gt;()  <span class="comment">// 😨 compile error，因為 G 和 H 沒有共同的 base class</span>
+}
+
+
+<span class="keyword">class</span> Base&lt;T&gt;:<span class="type">P</span> {<span class="keyword">typealias</span> PP = <span class="type">T</span>}
+<span class="keyword">class</span> G&lt;T&gt;: <span class="type">Base</span>&lt;T&gt;{
+}
+<span class="keyword">class</span> H&lt;T&gt;: <span class="type">Base</span>&lt;T&gt;{
+}
+<span class="keyword">func</span> s(b:<span class="type">Bool</span>) -&gt; <span class="keyword">some</span> <span class="type">P</span> {
+  b ? <span class="type">G</span>&lt;<span class="type">Int</span>&gt;() : <span class="type">H</span>&lt;<span class="type">Int</span>&gt;()
+}
+<span class="comment">// Complie 成功，因為 G 和 H 有共同的 base class，且其也是該 protocol</span>
+
+</code></pre><p>這是我在寫 Combine 時追查文件時靈機一動，將 <code>return AnyPublisher</code> 改為 <code>return some Publisher</code> 發現的，雖然現在沒有辦法在 SwiftUI 之外順利銜接。</p><h2>結語</h2><p>型別在物件導向中，有許多有趣的特性，在強型別的程式語言尤其明顯，而 Swift 更進一步有 Protocol Oriented Programming 的發展走向，使得型別不再有以繼承關係出現，而可以更彈性的處理。</p>]]></content:encoded></item><item><guid isPermaLink="true">https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift</guid><title>運用泛型實現 Fluent interface Setter</title><description>介紹 Fluent interface 及在 Swift 的實作</description><link>https://ytyubox.github.io/posts/2020/Fluent-interface-in-swift</link><pubDate>Sat, 14 Mar 2020 00:00:00 +0000</pubDate><content:encoded><![CDATA[<img src="https://i.imgur.com/YOSTX3P.png"/><h1>運用泛型實現 Fluent interface Setter</h1><p>Fluent Interface(FI)，又名流式接口，是一種在程式編寫的方式，這篇文章將描述 FI 的意義與如何在 Swift 5.1 實作。</p><h2>什麼是 Fluent interface</h2><p>流式接口可以將指令式語言轉化成宣告式語言，使簡易的邏輯判斷消失，進而加強程式碼的可讀性。在 FI 中有許多應用，我分成了 3 種類型 <code>Transformer</code>, <code>Getter</code>, <code>Setter</code>。</p><h3>Transformer</h3><p>我們在操作集合類型的時候，常常使用 filter、map、reduce，像是：</p><pre><code><span class="keyword">let</span> input = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
 <span class="keyword">let</span> output = input.<span class="call">map</span>(<span class="type">String</span>.<span class="property">init</span>)
 </code></pre><p>相比沒有使用 <code>map</code> 函式，我們可以使用 for in 迴圈來處理：</p><pre><code><span class="keyword">let</span> input = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]
 <span class="keyword">var</span> output = [<span class="type">String</span>]()
